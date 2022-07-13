@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaakeApp100722", "LaakeApp100722\LaakeApp100722.csproj", "{CFEEE27D-5C4D-416B-9BAC-8BB015066666}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaakeAppLibrary", "LaakeAppLibrary\LaakeAppLibrary.csproj", "{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{87154B36-40ED-4A70-8205-474E7FFEFD0F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFEEE27D-5C4D-416B-9BAC-8BB015066666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFEEE27D-5C4D-416B-9BAC-8BB015066666}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFEEE27D-5C4D-416B-9BAC-8BB015066666}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFEEE27D-5C4D-416B-9BAC-8BB015066666}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0EFD0DA-C085-4040-B708-47A3A7B43FC2}
+	EndGlobalSection
+EndGlobal

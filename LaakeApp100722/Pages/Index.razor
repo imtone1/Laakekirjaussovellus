@@ -1,0 +1,131 @@
+﻿@*tämä on root page "/"*@
+@page "/"
+
+@inject ICategoryData categoryData
+@inject IStatusData statusData
+@inject ISuggestionData suggestionData
+@inject IUserData userData
+@*navigaatioon*@
+@inject NavigationManager navManager
+@*pystyy säilyttämään filtteröinti, jos käy jollain muulla sivulla ja tulee takaisin*@
+@inject ProtectedSessionStorage sessionStorage
+
+
+
+@*Ensin koodi on tällä samalla sivulla testausvaiheessa, jälkikäteen siirretään se muualle. Ctrl . napauta hiirella code >extract code to code behind*@
+@code{
+    private List<SuggestionModel> suggestions;
+    private List<CategoryModel> categories;
+    private List<StatusModel> statuses;
+
+    private string selectedCategory = "All";
+    private string selectedStatus = "All";
+    private string searchText = "";
+    bool isSortedByNew = true;
+
+    protected async override Task OnInitializedAsync()
+    {
+        categories = await categoryData.GetAllCategories();
+        statuses = await statusData.GetAllStatuses();
+    }
+    //after page is rendered, redring 2 times
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //nämä on saatavilla vasta kun sivu on renderöity, siksi nämä ei voinut olla OnInitializedAsyncissa
+            await LoadFilterState();
+            await FilterSuggestions();
+            //tämä update page because state has canged, koska on async
+            StateHasChanged();
+        }
+    }
+    private async Task LoadFilterState()
+    {
+        var stringResults = await sessionStorage.GetAsync<string>(nameof(selectedCategory));
+        //jos stringResult onnistui niin asettaa stringResults.Value, jos ei niin laittaa "All"
+        selectedCategory = stringResults.Success ? stringResults.Value : "All";
+
+        stringResults = await sessionStorage.GetAsync<string>(nameof(selectedStatus));
+        selectedStatus = stringResults.Success ? stringResults.Value : "All";
+
+        stringResults = await sessionStorage.GetAsync<string>(nameof(searchText));
+        searchText = stringResults.Success ? stringResults.Value : "";
+
+        var boolResults = await sessionStorage.GetAsync<bool>(nameof(isSortedByNew));
+        isSortedByNew = boolResults.Success ? boolResults.Value : true;
+    }
+
+    private async Task SaveFilterState()
+    {
+        await sessionStorage.SetAsync(nameof(selectedCategory), selectedCategory);
+        await sessionStorage.SetAsync(nameof(selectedStatus), selectedStatus);
+        await sessionStorage.SetAsync(nameof(searchText), searchText);
+        await sessionStorage.SetAsync(nameof(isSortedByNew), isSortedByNew);
+    }
+    private async Task FilterSuggestions()
+    {
+        var output = await suggestionData.GetAllApprovedSuggestions();
+
+        //jos ei ole all valittuna. ei ole ideaali, mutta tässäkin controled invorement 
+        if (selectedCategory != "All")
+        {
+            //etsi categorian jos on kategorianimi joka vastaa valittua kategoriaa
+            output = output.Where(s => s.Category?.CategoryName == selectedCategory).ToList();
+        }
+        if (selectedStatus!="All")
+        {
+            output = output.Where(s => s.SuggestionStatus?.StatusName == selectedStatus).ToList();
+        }
+        if (string.IsNullOrWhiteSpace(searchText)==false)
+        {
+            //onko suggestion tai description sisältää tämän tekstin eikä välitetä onko isot vai pienet kirjaimet
+            output = output.Where(s => s.Suggestion.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) || s.Description.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+            ).ToList();
+        }
+        if (isSortedByNew)
+        {
+            output = output.OrderByDescending(s => s.DateCreated).ToList();
+        }
+        else
+        {
+            //jos on suggestion jossa on yhtä paljon ääniä niin järjestetään ne lisäksi by datecreated
+            output = output.OrderByDescending(s => s.UserVotes.Count).ThenByDescending(s => s.DateCreated).ToList();
+
+        }
+
+        suggestions = output;
+
+        await SaveFilterState();
+
+    }
+
+    private async Task OrderByNew(bool isNew)
+    {
+        isSortedByNew = isNew;
+        await FilterSuggestions();
+    }
+
+    private async Task OnSearchInput(string searchInput)
+    {
+        searchText = searchInput;
+        await FilterSuggestions();
+    }
+
+    private async Task OnCategoryClick(string category = "All")
+    {
+        selectedCategory = category;
+        await FilterSuggestions();
+    }
+
+    private async Task OnStatusClick(string status = "All")
+    {
+        selectedStatus = status;
+        await FilterSuggestions();
+    }
+
+    private string GetUpvoteTopText(SuggestionModel suggestion)
+    {
+        
+    }
+}
