@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaakeApp100722", "LaakeApp100722\LaakeApp100722.csproj", "{CFEEE27D-5C4D-416B-9BAC-8BB015066666}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaakeAppLibrary", "LaakeAppLibrary\LaakeAppLibrary.csproj", "{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaakeAppLibrary", "LaakeAppLibrary\LaakeAppLibrary.csproj", "{F1579B74-1EF6-4F36-9F0E-6E8F61CAB292}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{87154B36-40ED-4A70-8205-474E7FFEFD0F}"
 	ProjectSection(SolutionItems) = preProject
