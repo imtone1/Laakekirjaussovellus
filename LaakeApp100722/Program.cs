@@ -1,11 +1,12 @@
-
+﻿
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Rewrite;
 using LaakeApp100722;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//korvattu, l�ytyy mit� on korvattu RegisterServices.cs:sta
+//korvattu, löytyy mitä on korvattu RegisterServices.cs:sta
 builder.ConfigureServices();
 
 var app = builder.Build();
@@ -24,6 +25,22 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseRewriter(
+   new RewriteOptions().Add(
+      context =>
+      {
+         //se ei ohjaa automaattisesti enää microsoftIdentity perussivulle vaan ohjaa kotisivulle >täytyy muuttaa vielä app.razor page
+         if (context.HttpContext.Request.Path == "/MicrosoftIdentity/Account/SignedOut")
+         {
+            context.HttpContext.Response.Redirect("/");
+         }
+      }
+      ));
+
+app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

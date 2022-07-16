@@ -1,6 +1,13 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@*lisätty cascadingAuthenticationState jotta ohjaisi autherization jälkeen kotisivulle huomaa ennen sitä tehty lisäykset program.cs sivulle*@
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" >
+            <NotAuthorized>
+                @*Ohjaa ei authorizoidut NotAuthorized sivulle Shared kansiossa*@
+              <NotAuthorized/>
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
@@ -9,4 +16,6 @@
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
     </NotFound>
-</Router>
+    </Router>
+
+</CascadingAuthenticationState>

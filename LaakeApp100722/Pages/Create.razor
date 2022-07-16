@@ -1,6 +1,8 @@
 ﻿@page "/Create"
+@attribute [Authorize]
 @using LaakeApp100722.Models
 @using LaakeApp100722.Components
+@inject AuthenticationStateProvider authProvider
 @inject ICategoryData categoryData
 @inject ISuggestionData suggestionData
 @inject IUserData userData
@@ -57,12 +59,14 @@
     private List<CategoryModel> categories;
     private UserModel loggedInUser;
 
-       protected async override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         categories= await categoryData.GetAllCategories();
 
-        //TODO -Replce with user lookup
-        loggedInUser = await userData.GetUserFromAuthentication("abc-123");
+        //actial user
+        var authState = await authProvider.GetAuthenticationStateAsync();
+        string objectId=authState.User.Claims.FirstOrDefault(c => c.Type.Contains("objectidentifier"))?.Value;
+        loggedInUser = await userData.GetUserFromAuthentication(objectId);
     }
 
     private void ClosePage()
