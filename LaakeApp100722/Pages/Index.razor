@@ -1,6 +1,6 @@
 ﻿@*tämä on root page "/"*@
 @page "/"
-
+@inject AuthenticationStateProvider authProvider
 @inject ICategoryData categoryData
 @inject IStatusData statusData
 @inject ISuggestionData suggestionData
@@ -33,7 +33,7 @@
         { @*paging, infinateli scrollable list +10*@
             <Virtualize Items="@suggestions" Context="s" OverscanCount="10">
                 <div>
-                    <div>
+                    <div @onclick="(()=>VoteUp(s))">
                         <div>@GetUpvoteTopText(s)</div>
                         <span class="oi oi-caret-top"></span>
                         <div>@GetUpvoteBottomText(s)</div>
@@ -82,6 +82,7 @@
 </div>
 @*Ensin koodi on tällä samalla sivulla testausvaiheessa, jälkikäteen siirretään se muualle. Ctrl . napauta hiirella code >extract code to code behind*@
 @code{
+    private UserModel loggedInUser;
     private List<SuggestionModel> suggestions;
     private List<CategoryModel> categories;
     private List<StatusModel> statuses;
@@ -95,7 +96,69 @@
     {
         categories = await categoryData.GetAllCategories();
         statuses = await statusData.GetAllStatuses();
+        await LoadAndVerifyUser();
     }
+
+    //kirjautuneet käyttäjät täytyy vielä tallentaa mongodb tietokantaan
+    private async Task LoadAndVerifyUser()
+    {
+        //actual user
+        var authState = await authProvider.GetAuthenticationStateAsync();
+        string objectId = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("objectidentifier"))?.Value;
+        //tarkistetaan onko kirjautunut, jos ei 
+        if (string.IsNullOrWhiteSpace(objectId) == false)
+        {
+            //joko meillä on kirjautuneen tiedot tai sitten se palauttaa new
+            loggedInUser = await userData.GetUserFromAuthentication(objectId) ?? new();
+            string firstName = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("givenname"))?.Value;
+            string lastName = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("surname"))?.Value;
+            //pitää olla equals koska muuten palauttaisi myös givenname ja surname, koska sis. name >firstordefault vuoksi kaatuisi
+            string displayName = authState.User.Claims.FirstOrDefault(c => c.Type.Equals("name"))?.Value;
+            string email = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))?.Value;
+            //have we changed object?
+            bool isDirty = false;
+            //jos tämä ei täsmää niin käyttäjä on uusi
+            if (objectId.Equals(loggedInUser.ObjectIdentifier) == false)
+            {
+                isDirty = true;
+                loggedInUser.ObjectIdentifier = objectId;
+            }
+            if (firstName.Equals(loggedInUser.FirstName) == false)
+            {
+                isDirty = true;
+                loggedInUser.FirstName = firstName;
+            }
+            if (lastName.Equals(loggedInUser.LastName) == false)
+            {
+                isDirty = true;
+                loggedInUser.LastName = lastName;
+            }
+            if (displayName.Equals(loggedInUser.DisplayName) == false)
+            {
+                isDirty = true;
+                loggedInUser.DisplayName = displayName;
+            }
+            if (email.Equals(loggedInUser.EmailAddress) == false)
+            {
+                isDirty = true;
+                loggedInUser.EmailAddress = email;
+            }
+
+            if (isDirty)
+            {
+                //tämä tarkoittaa, että tietokannassa ei ole tätä käyttäjää eli Id ei löydy tietokannasta
+                if (string.IsNullOrWhiteSpace(loggedInUser.Id))
+                {
+                    await userData.CreateUser(loggedInUser);
+                }
+                else
+                {
+                    await userData.UpdateUser(loggedInUser);
+                }
+            }
+        }
+    }
+
     //after page is rendered, redring 2 times
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -192,6 +255,36 @@
         await FilterSuggestions();
     }
 
+    private async Task VoteUp(SuggestionModel suggestion)
+    {
+        if(loggedInUser is not null)
+        {
+            if (suggestion.Author.Id==loggedInUser.Id)
+            {
+                //Can't vote on your own suggestion
+                return;
+            }
+            //pystyy toista kertaa klikkaamalla poistamaan oman äänensä. Nopeasti näyttää vielä tekemättä mitään tietokantaan.
+            if (suggestion.UserVotes.Add(loggedInUser.Id)==false)
+            {
+                suggestion.UserVotes.Remove(loggedInUser.Id);
+            }
+
+            //päivitetään ääni tietokantaan
+            await suggestionData.UpvoteSuggestion(suggestion.Id, loggedInUser.Id);
+
+            //nopeutetaan,näytetään käyttäjälle uudet uservotes, odottamatta tietokanta päivitystä
+            if(isSortedByNew == false)
+            {
+                suggestions = suggestions.OrderByDescending(s => s.UserVotes.Count).ThenByDescending(s => s.DateCreated).ToList();
+            }
+        }
+        else
+        {//jos ei ole kirjautunut ja klikkaaa äänestä niin vie kirjautumissivulle. True koska on ulkopuolinen sivu
+            navManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
+        }
+    }
+
     private string GetUpvoteTopText(SuggestionModel suggestion)
     {
         if (suggestion.UserVotes?.Count > 0)
@@ -200,7 +293,15 @@
         }
         else
         {
-            return "Click To";
+            //jos kirjautunut käyttääjä on ehdotuksen esittäjän >hän näkee "Awaiting"
+            if (suggestion.Author.Id == loggedInUser?.Id)
+            {
+                return "Awaiting";
+            }
+            else
+            {
+                 return "Click To";
+            }
         }
     }
 

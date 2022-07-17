@@ -93,9 +93,10 @@ public class MongoSuggestionData : ISuggestionData
          {
             suggestion.UserVotes.Remove(userId);
          }
-         await suggestionsInTransaction.ReplaceOneAsync(s => s.Id == suggestionId, suggestion);
+         //rollback onnistuakseen täytyy välittää session tiedon
+         await suggestionsInTransaction.ReplaceOneAsync(session, s => s.Id == suggestionId, suggestion);
          var usersInTransaction = db.GetCollection<UserModel>(_db.UserCollectionName);
-         var user = await _userData.GetUser(suggestion.Author.Id);
+         var user = await _userData.GetUser(userId);
 
          if (isUpvote)
          {
@@ -106,7 +107,7 @@ public class MongoSuggestionData : ISuggestionData
             var suggestionToRemove = user.VotedOnSuggestions.Where(s => s.Id == suggestionId).First();
             user.VotedOnSuggestions.Remove(new BasicSuggestionModel(suggestion));
          }
-         await usersInTransaction.ReplaceOneAsync(u => u.Id == userId, user);
+         await usersInTransaction.ReplaceOneAsync(session, u => u.Id == userId, user);
 
          await session.CommitTransactionAsync();
          //jos cachesta ei poisteta niin voisi äänestää kaksi kertaa koska cache olisi se tieto

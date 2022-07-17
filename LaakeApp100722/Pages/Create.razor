@@ -63,10 +63,12 @@
     {
         categories= await categoryData.GetAllCategories();
 
-        //actial user
-        var authState = await authProvider.GetAuthenticationStateAsync();
-        string objectId=authState.User.Claims.FirstOrDefault(c => c.Type.Contains("objectidentifier"))?.Value;
-        loggedInUser = await userData.GetUserFromAuthentication(objectId);
+        ////actial user
+        //var authState = await authProvider.GetAuthenticationStateAsync();
+        //string objectId=authState.User.Claims.FirstOrDefault(c => c.Type.Contains("objectidentifier"))?.Value;
+        //loggedInUser = await userData.GetUserFromAuthentication(objectId);
+        //siirretty yllä oleva Helpers fileen
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
     }
 
     private void ClosePage()
