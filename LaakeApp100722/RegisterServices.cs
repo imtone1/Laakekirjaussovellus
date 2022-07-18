@@ -34,6 +34,14 @@ public static class RegisterServices
       builder.Services.AddSingleton<IStatusData, MongoStatusData>();
       builder.Services.AddSingleton<ISuggestionData, MongoSuggestionData>();
       builder.Services.AddSingleton<IUserData, MongoUserData>();
+      //omat
+      builder.Services.AddSingleton<ILaakeData, MongoLaakeData>();
+      builder.Services.AddSingleton<IKipumittariData, MongoKipumittariData>();
+      builder.Services.AddSingleton<ILaakeKayttoData, MongoLaakeKayttoData>();
+      builder.Services.AddSingleton<ILaakeMuotoData, MongoLaakeMuotoData>();
+      builder.Services.AddSingleton<IOireetData, MongoOireetData>();
+      builder.Services.AddSingleton<IOireKuvausData, MongoOireKuvausData>();
+      builder.Services.AddSingleton<IYoMukaanData, MongoYoMukaanData>();
 
 
     }

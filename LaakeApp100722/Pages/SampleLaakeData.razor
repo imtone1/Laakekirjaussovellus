@@ -11,10 +11,178 @@
 
 <h3>SampleLaakeData</h3>
 
+@if (muotoluotu)
+{
+    <h4>Laakemuodot on luotu</h4>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="GenerateMuoto">Lisää laakemuodot tietokantaan</button>
+}
+@*@if (statusesCreated)
+{
+    <h4>Statuses have been created</h4>
+}
+else
+{
+<button class="btn btn-primary" @onclick="CreateStatuses">Create Statuses</button>
+}*@
+
+
 @code {
+    private bool muotoluotu = false;
 
     private async Task GenerateMuoto()
     {
-        
+        var laakemuoto = await laakemuotoData.GetAllLaakemuodot();
+        //if laakemuoto not null niin katso onko count suurempi kuin 0
+        if (laakemuoto?.Count > 0)
+        {
+            //jos on jo laakemuotoja niin palauttaa
+            return;
+        }
+
+
+        //luodaan muodot lähde https://www.terve.fi/artikkelit/laakemuodot
+        LaakeMuotoModel laakemuotodat = new()
+        {
+            LaakeMuotoNimi="Kapseli",
+            LaakeMuotoKuvaus="Kapselissa on gelatiinista eli liivatteesta tai selluloosasta valmistettu kova tai pehmeä kuori, jonka sisälle jauhemaisessa, rakeisessa tai nestemäisessä muodossa olevat lääke- ja apuaineet on suljettu. Kapseli tulee nielaista kokonaisena ja sen kanssa tulisi nauttia noin lasillinen vettä tai muuta nestettä, jotta kapseli ei tarttuisi ruokatorveen. Kapselin kuori sulaa mahalaukussa, jolloin lääkeaine vapautuu ja alkaa imeytyä. Mikäli kapselin nieleminen kokonaisena ei onnistu, sen voi tarvittaessa avata ja sekoittaa sisällön ruokaan tai nesteeseen. Pehmeäkuorisia, nestemäistä lääkeainetta sisältäviä kapseleita ei suositella avattavaksi."
+        };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+
+        laakemuotodat = new()
+        {
+            LaakeMuotoNimi="Tabletti",
+            LaakeMuotoKuvaus="Tabletti on jauheseoksesta puristettu, nieltäväksi tarkoitettu lääkevalmiste, jossa vaikuttavan aineen lisäksi on erilaisia apuaineita. Tabletti voi olla muodoltaan pyöreä, pitkänomainen, soikea tai kulmikas, litteä tai linssimäinen. Siinä voi olla jakouurre puolittamista varten. Tabletti voi olla päällystämätön tai se voi olla päällystetty ohuella kalvolla, jotta lääkeaineen paha maku ei tuntuisi suussa. Kun tabletti niellään, sen kanssa tulisi nauttia noin lasillinen vettä tai muuta nestettä, jotta tabletti ei tarttuisi ruokatorveen. Tabletissa oleva lääkeaine imeytyy tabletin hajottua ja liuettua mahalaukussa."
+        };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Pilleri",
+                LaakeMuotoKuvaus = "Pilleri on liukenevasta lääkeaineesta tehty pieni pallo, joka on tarkoitettu nieltäväksi. Aikaisemmin lääkepillerit valmistettiin käsityönä apteekissa. Nykyisin Lääkelaitos mainitsee pillerin lääkemuotona ainoastaan antroposofisten valmisteiden luettelossa, jolloin kyseessä ovat perinteiseen tapaan valmistetut lääkepillerit. Puhekielessä pilleri-nimitystä käytetään lähinnä tabletin synonyyminä (esim. ehkäisypilleri, kun tarkoitetaan ehkäisytablettia)."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Depottabletti eli retard-tabletti",
+                LaakeMuotoKuvaus = "Depottabletti eli retard-tabletti on muuten tavallisen tabletin kaltainen, mutta se on päällystetty veteen liukenemattomalla kalvolla. Kalvon ansiosta tabletti alkaa hajota ja liueta vasta ruoansulatuskanavassa, jossa lääkeaine vapautuu hitaasti ja lääke vaikuttaa pitkään. Pitkävaikutteisuuden ansiosta lääkettä pitää ottaa yleensä vain yksi annos päivässä. Depottabletti tulee niellä kokonaisena ja sen kanssa tulisi nauttia noin lasillinen vettä tai muuta nestettä, jotta tabletti ei tarttuisi ruokatorveen."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Enterotabletti",
+                LaakeMuotoKuvaus = "Enterotabletti on depottabletin kaltainen, mutta päällystetty kestävämmin, jolloin tabletti kulkee liukenematta mahalaukun läpi ja sen sisältämä lääkeaine alkaa imeytyä vasta ohutsuolessa. Näin ollen tabletti ei ärsytä mahaa eikä lääkeaine tuhoudu mahan happamissa olosuhteissa. Enterotabletti tulee nielaista kokonaisena ja sen kanssa tulisi nauttia noin lasillinen vettä tai muuta nestettä, jotta tabletti ei tarttuisi ruokatorveen."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Poretabletti",
+                LaakeMuotoKuvaus = "Poretabletti on jauheseoksesta puristettu lääkevalmiste, joka on tehty nopeasti veteen liukenevaksi. Poretabletti liuotetaan lasilliseen vettä ja lääke nautitaan juomana. Lääke imeytyy mahalaukussa ja vaikutus alkaa nopeasti. Poretabletit ärsyttävät mahaa yleensä vähemmän kuin tavalliset tabletit."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Purutabletti",
+                LaakeMuotoKuvaus = "Purutabletti on jauheseoksesta puristettu lääkevalmiste, joka on tarkoitettu pureskeltavaksi ja nieltäväksi. Purutabletin sisältämä lääkeaine imeytyy sekä suusta, mahalaukusta että ohutsuolesta. Purutablettiin lisätään yleensä apuaineita, jotka tekevät tabletin hyvänmakuiseksi."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Imeskelytabletti",
+                LaakeMuotoKuvaus = "Imeskelytabletti on suussa liukenemaan tarkoitettu tabletti, jonka lääkeaineet vaikuttavat paikallisesti suussa ja nielussa. Imeskelytabletteja käytetään esimerkiksi kurkkukivun hoitoon sekä suun ja nielun limakalvovaurioiden hoitoon."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Kielenalustabletti",
+                LaakeMuotoKuvaus = "Resoribletti eli kielenalustabletti on suussa liukenemaan tarkoitettu tabletti, joka asetetaan kielen alle tai ikenen ja posken väliin, missä se sulaa. Lääke imeytyy suun limakalvolta verenkiertoon ja alkaa vaikuttaa nopeasti. Lääkeaine ei ole tarkoitettu paikallisesti vaikuttavaksi. Esim. rasitusrintakivun hoidossa käytettävät ns. nitrot ovat resoribletteja. Resoriblettia ei pidä pureskella eikä nielaista."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Jauhe",
+                LaakeMuotoKuvaus = "Jauheet ovat jauhomaisia lääkevalmisteita, jotka on usein annosteltu valmiiksi pieniin annospusseihin tai jauhe on tarkoitettu annosteltavaksi pakkauksen mukana tulevalla mitalla. Jauheen voi niellä sellaisenaan runsaan nesteen, esim. vesilasillisen kera, tai jauheen voi sekoittaa ensin veteen ja juoda. Lääke imeytyy mahalaukussa ja vaikutus alkaa nopeasti."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Oraaliliuos eli oraalisuspensio",
+                LaakeMuotoKuvaus = "Oraaliliuos eli oraalisuspensio on nestemäinen lääkemuoto, joka nautitaan suun kautta. Se voi sisältää yhtä tai useampaa vaikuttavaa ainetta. Oraaliliuos voi olla valmiiksi sekoitettua tai se voidaan valmistaa jauheesta tai rakeista veteen sekoittamalla. Sekoittaminen tapahtuu yleensä apteekissa ennen asiakkaalle toimittamista. Kun lääkejauhe tai rakeet liukenevat täysin nesteeseen, syntyy juokseva tai jogurttimainen oraalineste, josta käytetään myös nimitystä mikstuura. Jossain valmisteissa jauhe on tarkoitettu sekoittumaan veteen liukenematta niin, että tuloksena on lietemäinen suspensio, jossa kiinteät hiukkaset laskeutuvat vähitellen pullon pohjalle. Lääkepulloa on tällöin ravisteltava huolellisesti ennen käyttöä, jotta ainesosat sekoittuisivat keskenään. Monet varsinkin lapsille tarkoitetut oraaliliuokset on makeutettu ja värjätty houkutteleviksi. Oraaliliuosten annokset ilmoitetaan millilitroissa ja annostelu tapahtuu joko ruiskulla, pipetillä, annosmitalla tai -lusikalla."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Tippa",
+                LaakeMuotoKuvaus = "Tipat ovat suun kautta otettava lääkemuoto, jota käytetään, mikäli lääkkeen annosteltava määrä on pieni tai lääkkeen nauttiminen on hankalaa esimerkiksi tabletteina. Annostelu tapahtuu lääkepakkauksen sisältämän tiputuslaitteen avulla. Tippoja voi sekoittaa tarvittaessa esimerkiksi mehuun tai veteen."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Silmätippa",
+                LaakeMuotoKuvaus = "Silmätipat annostellaan tiputtamalla silmään alaluomen sisään. Tiputtaminen onnistuu parhaiten, kun taivuttaa päätä taaksepäin, vetää alaluomea sormella hiukan alaspäin siten, että silmäluomen ja silmän väliin muodostuu “tasku”. Avattu tippapullo käännetään ylösalaisin ja alaluomen sisään tiputetaan ohjeen mukainen määrä tippoja. Jos pullo on pehmeää muovia, sitä voi puristaa kevyesti. Pullon kärjellä ei saa koskettaa silmää eikä silmäluomea. Silmätippapulloa saa käyttää vain yksi henkilö. Tippapullon avaamisen jälkeen lääke säilyy käyttökelpoisena yleensä vain yhden kuukauden ajan, joten pakkaukseen on hyvä merkitä avaamispäivä. Pakkauksen säilytysohjetta lämpötilan osalta pitää noudattaa. Mikäli silmätipat on annosteltu kerta-annospipetteihin, annos on käytettävä välittömästi kerta-annospipetin avaamisen jälkeen, koska pipeteissä oleva lääke ei sisällä säilytysaineita."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Korvatippa",
+                LaakeMuotoKuvaus = "Korvatippoja tiputetaan korvakäytävään, jossa ne vaikuttavat paikallisesti. Yleensä pulloa pitää ravistaa hyvin juuri ennen käyttöä. Jos pullo on säilytetty jääkaapissa, se on hyvä lämmittää käsissä ennen tippojen laittamista niin, että liuos tiputettaessa on vähintään huoneenlämpöistä. Korvatippoja tiputettaessa maataan kyljellään tai kallistetaan päätä hoidettava korva ylöspäin. Tipat annostellaan korvaan painamalla pulloa kevyesti, kuitenkin niin, ettei pullon kärki kosketa korvakäytävää. Päätä on pidettävä tässä asennossa lääkepakkauksessa olevan ohjeen mukainen aika, jotta tipat leviäisivät hyvin korvakäytävän alueelle. Tarvittaessa korvatippojen annostelun voi tehdä myös sijoittamalla korvakäytävään korvatippaliuokseen kostutetun vanutupon. Tippapullon avaamisen jälkeen lääke säilyy käyttökelpoisena yleensä vain yhden kuukauden ajan, joten pakkaukseen on hyvä merkitä avaamispäivä."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Nenätippa",
+                LaakeMuotoKuvaus = "Nenätipat ovat paikallisesti nenän limakalvolla vaikuttamaan tarkoitettuja lääkkeitä. Niitä tiputetaan erityisen annostelijan eli tiputtimen avulla. Nenätipat voivat olla myös kerta-annospipeteissä, joissa on yleensä yhden hoitokerran mukainen määrä lääkettä."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Inhalaatiosumute",
+                LaakeMuotoKuvaus = "Inhalaatiosumute on lääkemuoto, jota käytetään annostelemaan lääkeainetta suoraan keuhkoihin erilaisissa keuhkosairauksissa kuten astmassa. Lääke annostellaan painesäiliöstä sisäänhengityksen avulla. Oikea inhalointitekniikka on tärkeää lääkkeen käytössä."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Inhalaatiojauhe",
+                LaakeMuotoKuvaus = "Inhalaatiojauheet ovat keuhkoihin annosteltavia erilaisten keuhkosairauksien lääkkeitä, joissa lääkeaine on jauhemaisessa muodossa. Inhalaatiojauheita käytetään sisään hengittämällä, mutta hengitystekniikka on hiukan erilainen kuin inhalaatiosumutteissa."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Peräpuikko eli suppo",
+                LaakeMuotoKuvaus = "Peräpuikko eli suppo on paikallisesti vaikuttava tai peräsuolen limakalvolta verenkiertoon imeytyvä lääke. Peräpuikkojen käyttö on tarkoituksenmukaista silloin, kun suun kautta ei voida annostella lääkettä esimerkiksi voimakkaan oksentelun vuoksi. Peräpuikkoja voidaan käyttää paikallisesti esimerkiksi peräpukamien hoitoon tai verenkierron välityksellä esimerkiksi migreenikivun hoitoon. Mikäli peräpuikko (vain rasva- tai vahapuikko) joudutaan jakamaan, se tulee tehdä varovaisesti pitkittäissuunnassa."
+            };
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+        laakemuotodat = new()
+            {
+                LaakeMuotoNimi = "Emätinpuikko",
+                LaakeMuotoKuvaus = "Emätinpuikot ovat valmisteita, jotka on tarkoitettu vaikuttamaan paikallisesti. Emätinpuikkojen ohella on olemassa emätintamponeja, jotka sisältävät yhden annoksen verran lääkeainetta. Asettimen avulla emätinpuikon asettaminen mahdollisimman syvälle emättimeen on helpointa. Lääkepakkauksissa ei ole aina erillistä asetinta, jolloin puikot tulee asettaa emättimeen käsin. Emätinpuikkoja käytetään mm. hiivatulehduksen ja vaihdevuosioireiden paikallishoitoon."
+            };
+
+
+        await laakemuotoData.CreateLaakemuoto(laakemuotodat);
+
+        muotoluotu = true;
     }
 }
