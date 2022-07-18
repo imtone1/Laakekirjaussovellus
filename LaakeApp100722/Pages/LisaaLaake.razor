@@ -1,0 +1,106 @@
+﻿@page "/LisaaLaake"
+@*@attribute [Authorize]*@
+@using LaakeApp100722.Models
+@using LaakeApp100722.Components
+@inject AuthenticationStateProvider authProvider
+@inject ILaakeData laakeData
+@inject IUserData userData
+@inject ILaakeMuotoData laakemuotoData
+@inject IYoMukaanData yomaarittelyData
+@inject IAnnosteluValiData annosteluData
+@inject NavigationManager navManager
+
+<h1>Lisää lääke</h1>
+<div>
+    <div>
+        <div><button @onclick="ClosePage"></button></div>
+        @if(laakemuodot is not null)
+        {
+            
+       
+        <EditForm Model="laake" OnValidSubmit="CreateLaake">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div>
+                <label for="suggestion-text">Lääke</label>
+                <div>Lisää lääke</div>
+               @* input object type text*@
+                <InputText id="suggestion-text" @bind-Value="laake.Nimi"/>
+            </div>
+            <div>
+                <label for="annosmaara">Annostusmäärä</label>
+                <InputNumber id="annosmaara" @bind-Value="laake.AnnosteleluMaara"/>
+            </div>
+            <div>
+                <label for="laakemuoto">Lääkemuoto</label>
+                <div>Valitse lääkemuoto</div>
+                <div>
+                    <MyInputRadioGroup id="laakemuoto" @bind-Value="laake.LaakeMuotoId">
+                        @foreach(var c in laakemuodot)
+                        {
+                            <div>
+                                <InputRadio Value ="@c.Id" id="@c.Id"/>
+                                <label for="@c.Id">@c.LaakeMuotoNimi</label>
+                                <div>@c.LaakeMuotoKuvaus</div>
+                            </div>
+                        }
+                    </MyInputRadioGroup>
+                    
+                </div>
+            </div>
+         <div>
+             <label for="yomukaan">Yö lasketaan mukaan?</label>
+             <InputRadioGroup id="yomukaan" @bind-Value="laake.YoMukaan">
+                 <div>
+                     <InputRadio Value="true" id="yomukaantrue"/>
+                     <label for="yomukaantrue">Yö lasketaan mukaan</label>
+                     <InputRadio Value="false" id="yomukaanfalse"/>
+                     <label for="yomukaanfalse">Yö ei lasketa mukaan</label>
+                 </div>
+             </InputRadioGroup>
+         </div>
+            <div>
+                <button type="submit">Lisää lääke</button>
+            </div>
+        </EditForm>}
+    </div>
+</div>
+ 
+@code {
+    private CreateLaakeModel laake = new();
+    private List<LaakeMuotoModel> laakemuodot;
+    private UserModel loggedInUser;
+
+    protected async override Task OnInitializedAsync()
+    {
+        laakemuodot = await laakemuotoData.GetAllLaakemuodot();
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
+    }
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+    private async Task CreateLaake()
+    {
+        //koska käytetään Modaalin jossa on ui specific modifiers, täytyy mapata
+        LaakeModel l = new();
+        l.Nimi = laake.Nimi;
+        l.AnnosteluMaara = laake.AnnosteleluMaara;
+        l.Author = new BasicUserModel(loggedInUser);
+        l.LaakeMuoto = laakemuodot.Where(c => c.Id == laake.LaakeMuotoId).FirstOrDefault();
+        l.YoMukaan = laake.YoMukaan;
+        l.Lisatty = DateTime.UtcNow;
+        l.Muokattu = DateTime.UtcNow;
+
+        if(l.LaakeMuoto is null)
+        {
+            laake.LaakeMuotoId = "";
+            return;
+        }
+
+        await laakeData.CreateLaake(l);
+        //puhdistetaan suggestionin, jottei luoda toista samanlaista
+        laake = new();
+        ClosePage();
+    }
+}

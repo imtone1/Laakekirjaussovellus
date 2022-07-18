@@ -42,6 +42,7 @@ public static class RegisterServices
       builder.Services.AddSingleton<IOireetData, MongoOireetData>();
       builder.Services.AddSingleton<IOireKuvausData, MongoOireKuvausData>();
       builder.Services.AddSingleton<IYoMukaanData, MongoYoMukaanData>();
+      builder.Services.AddSingleton<IAnnosteluValiData, MongoAnnosteluValiData>();
 
 
     }
