@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace LaakeAppLibrary.DataAccess;
-public class MongoLaakeMuotoData
+public class MongoLaakeMuotoData : ILaakeMuotoData
 {
    private readonly IMongoCollection<LaakeMuotoModel> _laakemuoto;
    private readonly IMemoryCache _cache;

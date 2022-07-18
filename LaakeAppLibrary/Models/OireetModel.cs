@@ -9,9 +9,10 @@ public class OireetModel
 {
    [BsonId]
    [BsonRepresentation(BsonType.ObjectId)]
-   public string OireetId { get; set; }
+   public string Id { get; set; }
    public string OireNimi { get; set; }
    public string OireKuvaus { get; set; }
+   public BasicUserModel Author { get; set; }
 
    public OireKuvausModel OireKuvausLista { get; set; }
    public DateTime OirePvm { get; set; }=DateTime.Now;

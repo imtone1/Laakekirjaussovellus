@@ -9,7 +9,7 @@ public class YoMaarittelyModel
 {
    [BsonId]
    [BsonRepresentation(BsonType.ObjectId)]
-   public string YoMaarittelyId { get; set; }
+   public string Id { get; set; }
    public DateTime YoAlku { get; set; }
    public DateTime YoLoppu { get; set; }
 }

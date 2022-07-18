@@ -20,6 +20,10 @@ public class DbConnection : IDbConnection
    public string LaakeMuotoCollectionName { get; private set; } = "laakemuoto";
    public string LaakeKayttoCollectionName { get; private set; } = "laakekaytto";
    public string LaakeCollectionName { get; private set; } = "laake";
+   public string OireKuvausCollectionName { get; private set; } = "oirekuvaus";
+   public string OireetCollectionName { get; private set; } = "oireet";
+
+
    //Omat loppuu
    public MongoClient Client { get; private set; }
    public IMongoCollection<CategoryModel> CategoryCollection { get; private set; }
@@ -34,6 +38,10 @@ public class DbConnection : IDbConnection
    public IMongoCollection<LaakeMuotoModel> LaakeMuotoCollection { get; private set; }
    public IMongoCollection<LaakeKayttoModel> LaakeKayttoCollection { get; private set; }
    public IMongoCollection<LaakeModel> LaakeCollection { get; private set; }
+   public IMongoCollection<OireKuvausModel> OireKuvausCollection { get; private set; }
+   public IMongoCollection<OireetModel> OireetCollection { get; private set; }
+
+
    //Omat loppuu
    public DbConnection(IConfiguration config)
    {
@@ -56,7 +64,8 @@ public class DbConnection : IDbConnection
       LaakeKayttoCollection = _db.GetCollection<LaakeKayttoModel>(LaakeKayttoCollectionName);
       LaakeMuotoCollection = _db.GetCollection<LaakeMuotoModel>(LaakeMuotoCollectionName);
       LaakeCollection = _db.GetCollection<LaakeModel>(LaakeCollectionName);
-
+      OireKuvausCollection = _db.GetCollection<OireKuvausModel>(OireKuvausCollectionName);
+      OireetCollection = _db.GetCollection<OireetModel>(OireetCollectionName);
 
       //Omat loppuu
    }
