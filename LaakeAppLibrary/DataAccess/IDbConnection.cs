@@ -25,4 +25,10 @@ public interface IDbConnection
    string UserCollectionName { get; }
    IMongoCollection<YoMaarittelyModel> YoMaarittelyCollection { get; }
    string YoMaatittelyCollectionName { get; }
+   
+   IMongoCollection<OireKuvausModel> OireKuvausCollection { get; }
+   string OireKuvausCollectionName { get; }
+
+   IMongoCollection<OireetModel> OireetCollection { get; }
+   string OireetCollectionName { get; }
 }

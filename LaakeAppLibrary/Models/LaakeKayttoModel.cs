@@ -9,7 +9,8 @@ public class LaakeKayttoModel
 {
    [BsonId]
    [BsonRepresentation(BsonType.ObjectId)]
-   public string LaakeKayttoId { get; set; }
+   public string Id { get; set; }
+   public BasicUserModel Author { get; set; }
    public DateTime Kaytetty { get; set; } = DateTime.UtcNow;
    public DateTime Siirretty { get; set; }
    public DateTime Hylatty { get; set; }

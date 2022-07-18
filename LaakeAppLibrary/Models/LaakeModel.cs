@@ -8,6 +8,7 @@ namespace LaakeAppLibrary.Models
       [BsonRepresentation(BsonType.ObjectId)]
       public string Id { get; set; }
       public string Nimi { get; set; }
+      public BasicUserModel Author { get; set; }
       public LaakeMuotoModel LaakeMuoto { get; set; }
       public int AnnosteluMaara{ get; set; }
       public AnnosteluValiModel AnnosteluVali { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace LaakeAppLibrary.DataAccess;
-public class MongoLaakeMuotoData
+public class MongoLaakeMuotoData : ILaakeMuotoData
 {
    private readonly IMongoCollection<LaakeMuotoModel> _laakemuoto;
    private readonly IMemoryCache _cache;
@@ -22,7 +22,7 @@ public class MongoLaakeMuotoData
          output = results.ToList();
 
          //laitetaan kategoriat cacheen ja pidetään se siinä yhden päivän. Huom! Tämän takia cachissa saa olla vain sellainen data, joka ei muutu joka kerta
-         _cache.Set(CacheName, output, TimeSpan.FromDays(1));
+         _cache.Set(CacheName, output, TimeSpan.FromMinutes(1));
       }
       return output;
    }
