@@ -1,0 +1,132 @@
+﻿@page "/Lisatiedot/{Id}"
+@using LaakeApp100722.Models
+@using LaakeApp100722.Components
+@inject AuthenticationStateProvider authProvider
+@inject ILaakeData laakeData
+@inject IUserData userData
+@inject ILaakeMuotoData laakemuotoData
+@inject IYoMukaanData yomaarittelyData
+@inject IAnnosteluValiData annosteluData
+@inject NavigationManager navManager
+
+<h1>Lääkkeen lisätiedot</h1>
+
+<div>
+    <div>
+        @if (laake is not null)
+        {
+            <div>
+               
+                <div>
+                    @if (currentEditingTitle == laake.Id)
+                    {
+                        <EditForm Model="@editedTitle" OnSubmit="(()=>SaveName(laake))">
+                            <InputText @bind-Value="editedTitle"/>
+                            <button type="submit">
+                                <span class="oi oi-check"></span>
+                            </button>
+                             <button @onclick="(()=> currentEditingTitle=string.Empty)">
+                                <span class="oi oi-x"></span>
+                            </button>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        @laake.Nimi
+                        <span class="oi oi-pencil" @onclick="(()=>EditName(laake))"></span>
+                    }
+              
+                <div>Annostelumäärä:
+
+                @if (currentEditingDescription == laake.Id)
+                    {
+                        <EditForm Model="@editedmaara" OnSubmit="(()=>SaveAnnosmaara(laake))">
+                            <InputNumber @bind-Value="editedmaara"/>
+                             <button type="submit">
+                                <span class="oi oi-check"></span>
+                            </button>
+                             <button @onclick="(()=> currentEditingDescription=string.Empty)">
+                                <span class="oi oi-x"></span>
+                            </button>
+                        </EditForm>
+                    }
+                    else
+                    {
+                       @laake.AnnosteluMaara 
+                        <span class="oi oi-pencil" @onclick="(()=>EditAnnosmaara(laake))"></span>
+                    }
+</div>
+                <div>@laake.YoMukaan</div>
+
+                @if (laake.LaakeMuoto is not null){
+                <div>
+                    @laake.LaakeMuoto.LaakeMuotoNimi
+                    </div>
+                    <div>@laake.LaakeMuoto.LaakeMuotoKuvaus</div>}
+                </div>
+                 <div>
+                    <div>Lääke lisätty: @laake.Lisatty.ToString("dd.MM.yyyy")</div>
+                </div>
+                <div><button @onclick="ClosePage"></button>
+                    </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
+@code {
+      //parametri public koska kaikki muut sivutkin käyttävät tätä
+    [Parameter]
+    public string Id { get; set; }
+
+    private LaakeModel laake;
+    private UserModel loggedInUser;
+    private string currentEditingTitle = "";
+    private string editedTitle = "";
+    private string currentEditingDescription = "";
+    private int editedmaara;
+
+    protected async override Task OnInitializedAsync()
+    {
+        laake = await laakeData.GetLaake(Id);
+        //uses userdata and populates it
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+
+     private void EditName(LaakeModel model)
+    {
+        laake = model;
+        editedTitle = model.Nimi;
+        currentEditingTitle = model.Id;
+        currentEditingDescription = "";
+    }
+    private async Task SaveName(LaakeModel model)
+    {
+        currentEditingTitle = string.Empty;
+        model.Nimi = editedTitle;
+        await laakeData.UpdateLaake(model);
+    }
+
+    private void EditAnnosmaara(LaakeModel model)
+    {
+        laake = model;
+        editedmaara = model.AnnosteluMaara;
+        currentEditingTitle = "";
+        currentEditingDescription = model.Id;
+    }
+
+    private async Task SaveAnnosmaara(LaakeModel model)
+    {
+        currentEditingDescription = string.Empty;
+        model.AnnosteluMaara = editedmaara;
+         await laakeData.UpdateLaake(model);
+    }
+}
