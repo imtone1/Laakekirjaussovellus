@@ -10,6 +10,7 @@ public class YoMaarittelyModel
    [BsonId]
    [BsonRepresentation(BsonType.ObjectId)]
    public string Id { get; set; }
+   public BasicUserModel Author { get; set; }
    public DateTime YoAlku { get; set; }
    public DateTime YoLoppu { get; set; }
 }

@@ -78,7 +78,7 @@
 
 
 @code {
-      //parametri public koska kaikki muut sivutkin käyttävät tätä
+    //parametri public koska kaikki muut sivutkin käyttävät tätä
     [Parameter]
     public string Id { get; set; }
 
@@ -88,10 +88,12 @@
     private string editedTitle = "";
     private string currentEditingDescription = "";
     private int editedmaara;
+    private YoMaarittelyModel yo;
 
     protected async override Task OnInitializedAsync()
     {
         laake = await laakeData.GetLaake(Id);
+        yo = await yomaarittelyData.GetYoMukaanYksi(Id);
         //uses userdata and populates it
         loggedInUser = await authProvider.GetUserFromAuth(userData);
     }
@@ -101,7 +103,7 @@
         navManager.NavigateTo("/");
     }
 
-     private void EditName(LaakeModel model)
+    private void EditName(LaakeModel model)
     {
         laake = model;
         editedTitle = model.Nimi;
@@ -127,6 +129,12 @@
     {
         currentEditingDescription = string.Empty;
         model.AnnosteluMaara = editedmaara;
-         await laakeData.UpdateLaake(model);
+        await laakeData.UpdateLaake(model);
+    }
+
+    private async Task LaskeMaarat(LaakeModel model)
+    {
+        laake = model;
+        
     }
 }
