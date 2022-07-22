@@ -101,7 +101,7 @@
     private DateTime seuraavaAika;
     private string seuraavaaika;
     private string value1 = "";
-    private int annostuluvaliint;
+
 
 
     protected async override Task OnInitializedAsync()
@@ -157,32 +157,42 @@
     }
     private void OnClick(MouseEventArgs e)
     {
+        if(yo is not null){
+            TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
+            double paiva = 24 - (double)result.Hours;
+            //double paiva = 24;
+            //int paiva = 24-4;
+            int annosteluvaliint = laake.AnnosteluVali1;
+            if (annosteluvaliint > 2){
+                annosteluvaliint =annosteluvaliint- 1;
+            }
 
-        TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
-        double paiva = 24 - (double)result.Hours;
-        //double paiva = 24;
-        //int paiva = 24-4;
-        int annosteluvaliint = laake.AnnosteluVali1;
-        if (annosteluvaliint >= 2){
-            double jaettuna = paiva/ (annosteluvaliint - 1);
+            double jaettuna = paiva/ (annosteluvaliint);
+            //double jaettuna = paiva/ (laake.AnnosteluVali1-1);
+            //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
+            DateTime seuraavaAika = yo.YoLoppu;
+
+            for (var i = 0; i < laake.AnnosteluVali1; i++)
+            {
+                if (yo.YoLoppu.TimeOfDay <=seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
+                {
+                    value1= value1+ " "+ seuraavaAika.ToString("HH:mm");
+                    seuraavaAika = seuraavaAika.AddHours(jaettuna);
+                }
+
+            }
         }
         else
         {
-            double jaettuna = paiva / (annosteluvaliint);
-        }
-        //double jaettuna = paiva/ (laake.AnnosteluVali1-1);
-        //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
-        DateTime seuraavaAika = yo.YoLoppu;
-
-        for (var i = 0; i < annosteluvaliint; i++)
-        {
-            if (yo.YoLoppu.TimeOfDay <=seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
+            paiva = 24;
+            double jaettuna = paiva / laake.AnnosteluVali1;
+            DateTime seuraavaAika = DateTime.Now;
+            for (var i = 0; i < laake.AnnosteluVali1; i++)
             {
-                 value1= value1+ " "+ seuraavaAika.ToString("HH:mm");
-             seuraavaAika = seuraavaAika.AddHours(jaettuna);
+                value1= value1+ " "+ seuraavaAika.ToString("HH:mm");
+                seuraavaAika = seuraavaAika.AddHours(jaettuna);
             }
-           
         }
-      
+
     }
 }
