@@ -16,7 +16,7 @@ public class CreateLaakeModel
    public int AnnosteleluMaara { get; set; }
 
    [Display(Name = "Annosteluväli")]
-   public string AnnosteleluValiId { get; set; }
+   public int AnnosteleluValiId { get; set; }
 
    [Display(Name = "Otetaan yöllä")]
    public bool YoMukaan { get; set; }

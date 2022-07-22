@@ -12,6 +12,11 @@
 <h1>Lääkkeen lisätiedot</h1>
 
 <div>
+     <div>
+        <div><button @onclick="this.OnClick">
+
+        Katso ensimmäinen lääkeottokello</button>@value1</div>
+    </div>
     <div>
         @if (laake is not null)
         {
@@ -84,16 +89,26 @@
 
     private LaakeModel laake;
     private UserModel loggedInUser;
+    private AnnosteluValiModel annosteluVali;
     private string currentEditingTitle = "";
     private string editedTitle = "";
     private string currentEditingDescription = "";
     private int editedmaara;
     private YoMaarittelyModel yo;
+    private double paiva;
+    private TimeSpan result;
+    private double jaettuna;
+    private DateTime seuraavaAika;
+    private string seuraavaaika;
+    private string value1 = "";
+    private int annostuluvaliint;
+
 
     protected async override Task OnInitializedAsync()
     {
         laake = await laakeData.GetLaake(Id);
-        yo = await yomaarittelyData.GetYoMukaanYksi(Id);
+        yo = await yomaarittelyData.GetYoMukaanYksi(laake.Author.Id);
+        annosteluVali = await annosteluData.GetAnnosteluvali(laake.Id);
         //uses userdata and populates it
         loggedInUser = await authProvider.GetUserFromAuth(userData);
     }
@@ -134,7 +149,40 @@
 
     private async Task LaskeMaarat(LaakeModel model)
     {
+        laake = await laakeData.GetLaake(Id);
+        yo = await yomaarittelyData.GetYoMukaanYksi(laake.Author.Id);
         laake = model;
-        
+
+
+    }
+    private void OnClick(MouseEventArgs e)
+    {
+
+        TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
+        double paiva = 24 - (double)result.Hours;
+        //double paiva = 24;
+        //int paiva = 24-4;
+        int annosteluvaliint = laake.AnnosteluVali1;
+        if (annosteluvaliint >= 2){
+            double jaettuna = paiva/ (annosteluvaliint - 1);
+        }
+        else
+        {
+            double jaettuna = paiva / (annosteluvaliint);
+        }
+        //double jaettuna = paiva/ (laake.AnnosteluVali1-1);
+        //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
+        DateTime seuraavaAika = yo.YoLoppu;
+
+        for (var i = 0; i < annosteluvaliint; i++)
+        {
+            if (yo.YoLoppu.TimeOfDay <=seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
+            {
+                 value1= value1+ " "+ seuraavaAika.ToString("HH:mm");
+             seuraavaAika = seuraavaAika.AddHours(jaettuna);
+            }
+           
+        }
+      
     }
 }

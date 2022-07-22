@@ -50,6 +50,10 @@
                 <label for="annosmaara">Annostusmäärä</label>
                 <InputNumber id="annosmaara" @bind-Value="laake.AnnosteleluMaara"/>
             </div>
+             <div>
+                <label for="annosvali">Annostusteluväli</label>
+                <InputNumber id="annosvali" @bind-Value="laake.AnnosteleluValiId"/>
+            </div>
             <div>
                 <label for="laakemuoto">Lääkemuoto</label>
                 <div>Valitse lääkemuoto</div>
@@ -107,6 +111,7 @@
         LaakeModel l = new();
         l.Nimi = laake.Nimi;
         l.AnnosteluMaara = laake.AnnosteleluMaara;
+        l.AnnosteluVali1 = laake.AnnosteleluValiId;
         l.Author = new BasicUserModel(loggedInUser);
         l.LaakeMuoto = laakemuodot.Where(c => c.Id == laake.LaakeMuotoId).FirstOrDefault();
         l.YoMukaan = laake.YoMukaan;
@@ -131,7 +136,11 @@
         YoMaarittelyModel l = new();
         l.YoAlku = yomukaan.YoAlku.ToUniversalTime();
         l.Author = new BasicUserModel(loggedInUser);
-        l.YoLoppu = yomukaan.YoLoppu;
+        if (yomukaan.YoLoppu < yomukaan.YoAlku)
+        {
+            l.YoLoppu=yomukaan.YoLoppu.AddDays(1);
+        }else{
+        l.YoLoppu = yomukaan.YoLoppu;}
 
 
         await yomaarittelyData.CreateYoMukaan(l);

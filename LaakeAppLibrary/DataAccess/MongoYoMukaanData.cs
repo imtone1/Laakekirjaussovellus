@@ -58,9 +58,9 @@ public class MongoYoMukaanData : IYoMukaanData
       await _yomukaan.ReplaceOneAsync(s => s.Id == yo.Id, yo);
 
    }
-   public async Task<YoMaarittelyModel> GetYoMukaanYksi(string id)
+   public async Task<YoMaarittelyModel> GetYoMukaanYksi(string userid)
    {
-      var results = await _yomukaan.FindAsync(s => s.Id == id);
+      var results = await _yomukaan.FindAsync(s => s.Author.Id == userid);
       return results.FirstOrDefault();
    }
 }

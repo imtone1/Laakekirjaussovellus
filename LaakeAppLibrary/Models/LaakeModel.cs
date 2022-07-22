@@ -11,6 +11,8 @@ namespace LaakeAppLibrary.Models
       public BasicUserModel Author { get; set; }
       public LaakeMuotoModel LaakeMuoto { get; set; }
       public int AnnosteluMaara{ get; set; }
+
+      public int AnnosteluVali1 { get; set; }
       public AnnosteluValiModel AnnosteluVali { get; set; }
       public bool YoMukaan { get; set; } = false;
       public YoMaarittelyModel YoMaarittely { get; set; }
