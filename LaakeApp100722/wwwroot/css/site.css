@@ -12,9 +12,9 @@ h1, h2, h3, h4, h5, h6{
     font-weight:900;
     color: #FFFFFF;
 }
-
+ 
 body{
-    background:url(../images/ocean.jpg) no-repeat center center fixed;
+    background:url(../images/ocean.png) no-repeat center center fixed;
     background-size:cover;
     height:100%;
 }
