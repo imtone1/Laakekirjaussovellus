@@ -33,22 +33,30 @@
         { @*paging, infinateli scrollable list +10*@
             <Virtualize Items="@laake" Context="s" OverscanCount="10">
                 <div class="suggestion-entry">
+                    <div>
+                       @* <div class="text-uppercase"></div>
+                        <span class="oi oi-caret-top"></span>
+                        <div class="text-uppercase"></div>*@
+                        <div></div>
+                    </div>
                     <div class="suggestion-entry-text">
                         <div class="suggestion-entry-text-title" @onclick="(()=>OpenDetails(s))">
                             @s.Nimi
                         </div>
-                        <div> @s.AnnosteluMaara</div>
+                        <div>Annostelumäärä: @s.AnnosteluMaara</div>
+                        <div>Seuraavat lääkkeenottoajat: @LaskeLaakeVali1(s.AnnosteluVali1)</div>
                         <div>
                             <div class="suggestion-entry-text-category" @onclick="(()=> OpenDetails(s))">
                                 @s.LaakeMuoto?.LaakeMuotoNimi
                             </div>
                         </div>
                     </div>
-                    <div class="suggestion-entry-status">
+                    <div class="suggestion-entry-status @YomukaanClass(s.YoMukaan)">
                     <div class="suggestion-entry-status-text">
-                        @s.YoMukaan
+                        @Yomukaan(s.YoMukaan)
                     </div>
                     </div>
+                    
                 </div>
             </Virtualize>
         }
@@ -58,7 +66,7 @@
         {
             <div class="categories">
                 <span class="text-uppercase fw-bold">Lääkemuodot</span>
-                <div class="@GetSelectedCategory()" @onclick="(()=>OnCategoryClick())">All</div>
+                <div class="@GetSelectedCategory()" @onclick="(()=>OnCategoryClick())">Kaikki</div>
                 @foreach(var c in laakemuodot)
                 {
                     <div class="@GetSelectedCategory(c.LaakeMuotoNimi)" @onclick="(()=>OnCategoryClick(c.LaakeMuotoNimi))">@c.LaakeMuotoNimi</div>                       
@@ -76,14 +84,28 @@
     private List<LaakeMuotoModel> laakemuodot;
     private List<LaakeModel> laake;
 
+    private LaakeModel laake1;
+
     bool isSortedByNew = true;
     private string searchText = "";
-    private string selectedLaakemuoto = "All";
+    private string selectedLaakemuoto = "Kaikki";
+
+    private YoMaarittelyModel yo;
+    private double paiva;
+    private TimeSpan result;
+    private double jaettuna;
+    private DateTime seuraavaAika;
+    private string seuraavaaika;
+    private string value1 = "";
 
     protected async override Task OnInitializedAsync()
-    {
+    {  
+
         laakemuodot = await laakemuotoData.GetAllLaakemuodot();
         loggedInUser = await authProvider.GetUserFromAuth(userData);
+
+        yo = await yomaarittelyData.GetYoMukaanYksi(loggedInUser.Id);
+
     }
     private void ClosePage()
     {
@@ -105,15 +127,15 @@
 
     private async Task FilterSuggestions()
     {
-          var output = await laakeData.GetUsersLaakkeet(loggedInUser.Id);
+        var output = await laakeData.GetUsersLaakkeet(loggedInUser.Id);
 
         //jos ei ole all valittuna. ei ole ideaali, mutta tässäkin controled invorement 
-        if (selectedLaakemuoto != "All")
+        if (selectedLaakemuoto != "Kaikki")
         {
             //etsi categorian jos on kategorianimi joka vastaa valittua kategoriaa
             output = output.Where(s => s.LaakeMuoto?.LaakeMuotoNimi == selectedLaakemuoto).ToList();
         }
-       
+
         if (string.IsNullOrWhiteSpace(searchText)==false)
         {
             //onko suggestion tai description sisältää tämän tekstin eikä välitetä onko isot vai pienet kirjaimet
@@ -132,15 +154,15 @@
 
         laake = output;
 
-      
+
 
     }
-      private void OpenDetails(LaakeModel laake)
+    private void OpenDetails(LaakeModel laake)
     {
         navManager.NavigateTo($"/Lisatiedot/{laake.Id}");
     }
 
-     private async Task OrderByNew(bool isNew)
+    private async Task OrderByNew(bool isNew)
     {
         isSortedByNew = isNew;
         await FilterSuggestions();
@@ -152,13 +174,13 @@
         await FilterSuggestions();
     }
 
-        private async Task OnCategoryClick(string category = "All")
+    private async Task OnCategoryClick(string category = "Kaikki")
     {
         selectedLaakemuoto = category;
         await FilterSuggestions();
     }
 
-        private string GetSelectedCategory(string category = "All")
+    private string GetSelectedCategory(string category = "Kaikki")
     {
         if (category == selectedLaakemuoto)
         {
@@ -169,7 +191,7 @@
             return "";
         }
     }
-        //styling, palauttaa class css tiedon
+    //styling, palauttaa class css tiedon
     private string SortedByNewClass(bool isNew)
     {
         if (isNew == isSortedByNew)
@@ -181,5 +203,93 @@
             return "";
         }
     }
+
+    private string Yomukaan(bool yomukaan)
+    {
+        if (yomukaan)
+        {
+            return "Yö lasketaan";
+        }
+        else
+        {
+            return "Yötä ei lasketa";
+        }
+    }
+    private string YomukaanClass(bool yomukaan)
+    {
+        if (yomukaan)
+        {
+            
+            return "suggestion-entry-status-watching";
+        }
+        else
+        {
+            return "suggestion-entry-status-dismissed";
+        }
+    }
+
+    private string LaskeLaakeVali1(int vali)
+    {try
+        {value1 = "";
+            if (yo is not null)
+            {
+                TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
+                double paiva = 24 - (double)result.Hours;
+                //double paiva = 24;
+
+                int annosteluvaliint = vali;
+                if (annosteluvaliint > 2)
+                {
+                    annosteluvaliint = annosteluvaliint - 1;
+                }
+
+                double jaettuna = paiva / (annosteluvaliint);
+
+                //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
+                //DateTime seuraavaAika = yo.YoLoppu;
+                DateTime seuraavaAika = DateTime.UtcNow;
+                for (var i = 0; i < vali; i++)
+                {
+                    if (yo.YoLoppu.TimeOfDay <= seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
+                    { if (i == 0)
+                        {
+                            value1 = value1 + seuraavaAika.ToString("HH:mm");
+                        }
+                        else
+                        {
+                            value1 = value1 + ", " + seuraavaAika.ToString("HH:mm");
+                        }
+                        seuraavaAika = seuraavaAika.AddHours(jaettuna);
+
+                    }
+                }
+                return value1;
+            }
+            else
+            {
+                paiva = 24;
+                double jaettuna = paiva / vali;
+                DateTime seuraavaAika = DateTime.UtcNow;
+
+                for (var i = 0; i < vali; i++)
+                {
+                    if (i == 0)
+                    {
+                        value1= value1+ seuraavaAika.ToString("HH:mm");
+                    }else{
+                    value1= value1+ ", "+ seuraavaAika.ToString("HH:mm");}
+                    seuraavaAika = seuraavaAika.AddHours(jaettuna);
+                    
+                }
+                return value1;
+            }
+        }
+        catch
+        {
+            return "nolla";
+        }
+
+    }
+   
 
 }
