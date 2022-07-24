@@ -32,6 +32,16 @@ public class MongoAnnosteluValiData : IAnnosteluValiData
       return output;
    }
 
+   public async Task<List<AnnosteluValiModel>> GetLaakkeenOttopvm(string userId, string laakeId)
+   {
+     
+         var results = await _annosteluvali.FindAsync(s => s.Author.Id == userId && s.Laake.Id==laakeId);
+         var output = results.ToList();
+
+      
+      return output;
+   }
+
    public async Task CreateAnnosteluVali(AnnosteluValiModel annosteluvali)
    {
       var client = _db.Client;

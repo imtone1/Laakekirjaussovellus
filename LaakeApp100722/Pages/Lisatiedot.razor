@@ -15,11 +15,11 @@
      <div>
         <div><button @onclick="this.OnClick">
 
-        Katso ensimmäinen lääkeottokello</button>@value1</div>
-    </div>
-    <div>
-        @if (laake is not null)
+        Laske seuraavat lääkkeenottoajat</button>@value1</div>
+    </div>@if (laake is not null)
         {
+    <div>
+        
             <div>
                
                 <div>
@@ -61,7 +61,7 @@
                         <span class="oi oi-pencil" @onclick="(()=>EditAnnosmaara(laake))"></span>
                     }
 </div>
-                <div>@laake.YoMukaan</div>
+                <div>@Yomukaan(laake.YoMukaan)</div>
 
                 @if (laake.LaakeMuoto is not null){
                 <div>
@@ -72,11 +72,23 @@
                  <div>
                     <div>Lääke lisätty: @laake.Lisatty.ToString("dd.MM.yyyy")</div>
                 </div>
+                
                 <div><button @onclick="ClosePage"></button>
                     </div>
             </div>
-        }
+        
+    </div>}
+    <div>
+        @if(ottopvmlista is not null){
+        <div> Ottoajat: 
+            @foreach (var o in ottopvmlista)
+            {
+                <p>@o.Otettu.ToString("dd.MM.yyyy") klo @o.Otettu.ToString("HH:mm")</p>
+            }
+            
+        </div>}
     </div>
+    
 </div>
 
 
@@ -90,6 +102,7 @@
     private LaakeModel laake;
     private UserModel loggedInUser;
     private AnnosteluValiModel annosteluVali;
+    private List<AnnosteluValiModel> ottopvmlista;
     private string currentEditingTitle = "";
     private string editedTitle = "";
     private string currentEditingDescription = "";
@@ -108,9 +121,11 @@
     {
         laake = await laakeData.GetLaake(Id);
         yo = await yomaarittelyData.GetYoMukaanYksi(laake.Author.Id);
-        annosteluVali = await annosteluData.GetAnnosteluvali(laake.Id);
+        //annosteluVali = await annosteluData.GetAnnosteluvali(laake.Id);
+
         //uses userdata and populates it
         loggedInUser = await authProvider.GetUserFromAuth(userData);
+        ottopvmlista = await annosteluData.GetLaakkeenOttopvm(loggedInUser.Id, laake.Id);
     }
 
     private void ClosePage()
@@ -194,5 +209,16 @@
             }
         }
 
+    }
+        private string Yomukaan(bool yomukaan)
+    {
+        if (yomukaan)
+        {
+            return "Yö lasketaan";
+        }
+        else
+        {
+            return "Yötä ei lasketa";
+        }
     }
 }
