@@ -33,7 +33,7 @@
         { @*paging, infinateli scrollable list +10*@
             <Virtualize Items="@laake" Context="s" OverscanCount="10">
                 <div class="suggestion-entry">
-                    <div>
+                    <div class="suggestion-entry-voted" @onclick="(()=>OtaLaake(s))">
                        @* <div class="text-uppercase"></div>
                         <span class="oi oi-caret-top"></span>
                         <div class="text-uppercase"></div>*@
@@ -85,6 +85,7 @@
     private List<LaakeModel> laake;
 
     private LaakeModel laake1;
+    private AnnosteluValiModel annosteluvalicreate = new();
 
     bool isSortedByNew = true;
     private string searchText = "";
@@ -219,7 +220,7 @@
     {
         if (yomukaan)
         {
-            
+
             return "suggestion-entry-status-watching";
         }
         else
@@ -277,9 +278,9 @@
                     {
                         value1= value1+ seuraavaAika.ToString("HH:mm");
                     }else{
-                    value1= value1+ ", "+ seuraavaAika.ToString("HH:mm");}
+                        value1= value1+ ", "+ seuraavaAika.ToString("HH:mm");}
                     seuraavaAika = seuraavaAika.AddHours(jaettuna);
-                    
+
                 }
                 return value1;
             }
@@ -290,6 +291,26 @@
         }
 
     }
-   
+
+    private async Task OtaLaake(LaakeModel laakeotettu)
+    {
+        if(loggedInUser is not null)
+        {
+           
+            AnnosteluValiModel s = new();
+            s.Otettu = DateTime.Now;
+            s.Author = new BasicUserModel(loggedInUser);
+            s.Laake = laake.Where(c => c.Id == laakeotettu.Id).FirstOrDefault();
+
+            //päivitetään ääni tietokantaan
+            await annosteluData.CreateAnnosteluVali(s);
+        }
+        else
+        {//jos ei ole kirjautunut ja klikkaaa äänestä niin vie kirjautumissivulle. True koska on ulkopuolinen sivu
+            navManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
+        }
+    }
+
+    
 
 }
