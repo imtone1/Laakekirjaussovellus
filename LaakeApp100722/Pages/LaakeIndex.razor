@@ -33,11 +33,11 @@
         { @*paging, infinateli scrollable list +10*@
             <Virtualize Items="@laake" Context="s" OverscanCount="10">
                 <div class="suggestion-entry">
-                    <div class="suggestion-entry-voted" @onclick="(()=>OtaLaake(s))">
+                    <div class="@laakeotettunaclass(s)" @onclick="(()=>OtaLaake(s))">
                        @* <div class="text-uppercase"></div>
                         <span class="oi oi-caret-top"></span>
                         <div class="text-uppercase"></div>*@
-                        <div></div>
+                        <div  class="text-uppercase" >@laakeotettuna(s)</div>
                     </div>
                     <div class="suggestion-entry-text">
                         <div class="suggestion-entry-text-title" @onclick="(()=>OpenDetails(s))">
@@ -98,6 +98,8 @@
     private DateTime seuraavaAika;
     private string seuraavaaika;
     private string value1 = "";
+    
+    private string otettunalaake;
 
     protected async override Task OnInitializedAsync()
     {  
@@ -106,7 +108,7 @@
         loggedInUser = await authProvider.GetUserFromAuth(userData);
 
         yo = await yomaarittelyData.GetYoMukaanYksi(loggedInUser.Id);
-
+        laake=await laakeData.GetUsersLaakkeet(loggedInUser.Id);
     }
     private void ClosePage()
     {
@@ -296,7 +298,7 @@
     {
         if(loggedInUser is not null)
         {
-           
+
             AnnosteluValiModel s = new();
             s.Otettu = DateTime.Now;
             s.Author = new BasicUserModel(loggedInUser);
@@ -304,6 +306,8 @@
 
             //päivitetään ääni tietokantaan
             await annosteluData.CreateAnnosteluVali(s);
+            otettunalaake = laakeotettu.Id;
+            //this.laakeotettuclass = "suggestion-entry-voted";
         }
         else
         {//jos ei ole kirjautunut ja klikkaaa äänestä niin vie kirjautumissivulle. True koska on ulkopuolinen sivu
@@ -311,6 +315,24 @@
         }
     }
 
-    
+    private string laakeotettuna(LaakeModel laakeotettuna)
+    {
+        if (otettunalaake == laakeotettuna.Id)
+        {
+            return "Lääke otettu";
+        }
+       
+        return "Kirjaa aika";
+    }
+
+    private string laakeotettunaclass(LaakeModel laakeotettuna)
+    {
+        if (otettunalaake == laakeotettuna.Id)
+        {
+            return "suggestion-entry-voted";
+        }
+       
+        return "suggestion-entry-no-votes";
+    }
 
 }
