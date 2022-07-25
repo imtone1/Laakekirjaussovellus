@@ -7,32 +7,31 @@
 @inject ISuggestionData suggestionData
 @inject IUserData userData
 @inject NavigationManager navManager
-<h1>Make A Suggestion</h1>
+<h1 class="page-heading text-uppercase mb-4">Lisää idea</h1>
 
-<div>
-    <div>
-        <div><button @onclick="ClosePage"></button></div>
-        @if(categories is not null)
+<div class="row justify-content-center create-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="close-button-section">
+            <button class="btn btn-close" @onclick="ClosePage"></button></div>
+        @if (categories is not null)
         {
-            
-        }
-        <EditForm Model="suggestion" OnValidSubmit="CreateSuggestion">
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
-            <div>
-                <label for="suggestion-text">Suggestion</label>
-                <div>Focus on the topir of technology you want to learn about.</div>
-               @* input object type text*@
-                <InputText id="suggestion-text" @bind-Value="suggestion.Suggestion"/>
-            </div>
-            <div>
-                <label for="category">Category</label>
-                <div>Choose one category.</div>
-                <div>
-                    <MyInputRadioGroup id="category" @bind-Value="suggestion.CategoryId">
-                        @foreach(var c in categories)
-                        {
-                            <div>
+            <EditForm Model="suggestion" OnValidSubmit="CreateSuggestion">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="suggestion-text">Idea</label>
+                    <div class="input-description">Idea</div>
+                    @* input object type text*@
+                    <InputText class="form-control" id="suggestion-text" @bind-Value="suggestion.Suggestion"/>
+                </div>
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="category">Kategoria</label>
+                    <div class="input-description">Choose one category.</div>
+                    <div class="col-lg-8">
+                        <MyInputRadioGroup id="category" @bind-Value="suggestion.CategoryId">
+                            @foreach (var c in categories)
+                            {
+                            <div class="radio-item-group">
                                 <InputRadio Value ="@c.Id" id="@c.Id"/>
                                 <label for="@c.Id">@c.CategoryName - @c.CategoryDescription</label>
                             </div>
@@ -41,16 +40,17 @@
                     
                 </div>
             </div>
-             <div>
-                <label for="description-text">Description</label>
-                <div>Briefly describe your suggestion.</div>
+             <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="description-text">Idean kuvaus</label>
+                <div class="input-description">Kuvaa lyhyesti ideasi.</div>
                @* input object type text*@
-                <InputTextArea id="desctiption-text" @bind-Value="suggestion.Description"/>
+                <InputTextArea class="form-control" id="desctiption-text" @bind-Value="suggestion.Description"/>
             </div>
-            <div>
-                <button type="submit">Suggest</button>
+            <div class="center-children">
+                <button class="btn btn-main btn-lg text-uppercase" type="submit">Lisää idea</button>
             </div>
         </EditForm>
+        }
     </div>
 </div>
 
