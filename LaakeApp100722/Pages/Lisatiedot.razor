@@ -9,87 +9,123 @@
 @inject IAnnosteluValiData annosteluData
 @inject NavigationManager navManager
 
-<h1>Lääkkeen lisätiedot</h1>
+<h1 class="page-heading text-uppercase mb-4">Lääkkeen lisätiedot</h1>
 
-<div>
-     <div>
-        <div><button @onclick="this.OnClick">
-
-        Laske seuraavat lääkkeenottoajat</button>@value1</div>
-    </div>@if (laake is not null)
-        {
-    <div>
-        
+<div class="row justify-content-center detail-form">
+      
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="closebutton">
+                <button class="btn btn-close" @onclick="ClosePage"></button>
+        </div>
+    @* <div>
+        <div>
+            <button @onclick="this.OnClick">Laske seuraavat lääkkeenottoajat</button>
+            @value1
+        </div>
+    </div>*@
+   
+    @if (laake is not null)
+        { 
+            <div class="row suggestion-detail-row">  
+           
+                <div class="col-12 laake-otsikko">
+                  
+                @if (currentEditingTitle == laake.Id)
+                {
+                    <EditForm Model="@editedTitle" OnSubmit="(()=>SaveName(laake))">
+                        <InputText @bind-Value="editedTitle" />
+                        <button type="submit">
+                            <span class="oi oi-check"></span>
+                        </button>
+                            <button @onclick="(()=> currentEditingTitle=string.Empty)">
+                            <span class="oi oi-x"></span>
+                        </button>
+                    </EditForm>
+                }
+                else
+                {
+                  <div class="laake-otsikko text-uppercase fw-bold">@laake.Nimi
+                    <span class="oi oi-pencil" @onclick="(()=>EditName(laake))"></span></div>
+                   
+                } 
+              </div>
+              </div>
+              <div class="row suggestion-detail-row">
+            <div class="col-12 laake-detail"><div>Annostelumäärä:</div>
             <div>
-               
-                <div>
-                    @if (currentEditingTitle == laake.Id)
-                    {
-                        <EditForm Model="@editedTitle" OnSubmit="(()=>SaveName(laake))">
-                            <InputText @bind-Value="editedTitle"/>
+            @if (currentEditingDescription == laake.Id)
+                {
+                    <EditForm Model="@editedmaara" OnSubmit="(()=>SaveAnnosmaara(laake))">
+                        <InputNumber @bind-Value="editedmaara"/>
                             <button type="submit">
-                                <span class="oi oi-check"></span>
-                            </button>
-                             <button @onclick="(()=> currentEditingTitle=string.Empty)">
-                                <span class="oi oi-x"></span>
-                            </button>
-                        </EditForm>
-                    }
-                    else
-                    {
-                        @laake.Nimi
-                        <span class="oi oi-pencil" @onclick="(()=>EditName(laake))"></span>
-                    }
-              
-                <div>Annostelumäärä:
-
-                @if (currentEditingDescription == laake.Id)
-                    {
-                        <EditForm Model="@editedmaara" OnSubmit="(()=>SaveAnnosmaara(laake))">
-                            <InputNumber @bind-Value="editedmaara"/>
-                             <button type="submit">
-                                <span class="oi oi-check"></span>
-                            </button>
-                             <button @onclick="(()=> currentEditingDescription=string.Empty)">
-                                <span class="oi oi-x"></span>
-                            </button>
-                        </EditForm>
-                    }
-                    else
-                    {
-                       @laake.AnnosteluMaara 
-                        <span class="oi oi-pencil" @onclick="(()=>EditAnnosmaara(laake))"></span>
-                    }
-</div>
-                <div>@Yomukaan(laake.YoMukaan)</div>
-
-                @if (laake.LaakeMuoto is not null){
-                <div>
-                    @laake.LaakeMuoto.LaakeMuotoNimi
-                    </div>
-                    <div>@laake.LaakeMuoto.LaakeMuotoKuvaus</div>}
+                            <span class="oi oi-check"></span>
+                        </button>
+                            <button @onclick="(()=> currentEditingDescription=string.Empty)">
+                            <span class="oi oi-x"></span>
+                        </button>
+                    </EditForm>
+                }
+                else
+                {
+                    @laake.AnnosteluMaara 
+                    <span class="oi oi-pencil edit-merkki" @onclick="(()=>EditAnnosmaara(laake))"></span>
+                }
                 </div>
-                 <div>
-                    <div>Lääke lisätty: @laake.Lisatty.ToString("dd.MM.yyyy")</div>
+        </div>
+        <div class="row suggestion-detail-row">
+            <div class="col-12 laake-detail">
+            @if (laake.LaakeMuoto is not null){
+            <div>
+                @laake.LaakeMuoto.LaakeMuotoNimi
                 </div>
-                
-                <div><button @onclick="ClosePage"></button>
-                    </div>
+                <div>@laake.LaakeMuoto.LaakeMuotoKuvaus</div>}
             </div>
-        
-    </div>}
-    <div>
+            </div>
+                <div class="col-12 laake-detail" >
+                    <div>@Yomukaan(laake.YoMukaan)</div>
+                <div>Lääke lisätty: @laake.Lisatty.ToString("dd.MM.yyyy")</div>
+            </div>
+            
+         </div>
+  
+    
+    }
+    </div>
+</div>
         @if(ottopvmlista is not null){
-        <div> Ottoajat: 
+            <div class="row justify-content-center detail-form ottoaika-div">
+        <div class="col-xl-8 col-lg-10 form-layout"> <div class="fw-bold text-uppercase">Ottoajat</div>
+        <div >
             @foreach (var o in ottopvmlista)
             {
-                <p>@o.Otettu.ToString("dd.MM.yyyy") klo @o.Otettu.ToString("HH:mm")</p>
+                //aina sama pvm
+                @if (pvm!=Aika(o))
+                {
+                    
+                
+                <div class="fw-bold">@o.Otettu.ToString("dd.MM.yyyy") klo </div>
+
+                @foreach (var item in ottopvmlista)
+                {   
+                    @if(PVM(item)==aika)
+                    {
+                    <div class="ottoajat-list ottoajat" >@item.Otettu.ToString("HH:mm")</div>
+                    
+                    }
+                }
+                }
             }
-            
-        </div>}
-    </div>
+            </div>
+        </div>
+        </div>
+        }
     
-</div>
+   
+
+
+
+
+
 
 
 
@@ -114,7 +150,8 @@
     private DateTime seuraavaAika;
     private string seuraavaaika;
     private string value1 = "";
-
+    private string aika = "";
+    private string pvm = "";
 
 
     protected async override Task OnInitializedAsync()
@@ -210,7 +247,7 @@
         }
 
     }
-        private string Yomukaan(bool yomukaan)
+    private string Yomukaan(bool yomukaan)
     {
         if (yomukaan)
         {
@@ -220,5 +257,19 @@
         {
             return "Yötä ei lasketa";
         }
+    }
+
+    private string Aika(AnnosteluValiModel model)
+    {
+        aika = "";
+        aika=model.Otettu.ToString("dd.MM.yyyy");
+        return aika;
+    }
+
+    private string PVM(AnnosteluValiModel model)
+    {
+        pvm = "";
+        pvm=model.Otettu.ToString("dd.MM.yyyy");
+        return pvm;
     }
 }
