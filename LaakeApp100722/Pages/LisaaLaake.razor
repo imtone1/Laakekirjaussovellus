@@ -10,39 +10,42 @@
 @inject IAnnosteluValiData annosteluData
 @inject NavigationManager navManager
 
-<h1>Lisää lääke</h1>
-<div>
-    <div>
+<h1 class="page-heading text-uppercase mb-4">Lisää lääke</h1>
+<div class="row justify-content-center create-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="closebutton"><button class="btn btn-close" @onclick="ClosePage"></button></div>
         <div>
            <EditForm Model="yomukaan" OnValidSubmit="CreateYoMaarittely">
                <DataAnnotationsValidator/>
                <ValidationSummary/>
-               <div>
-                   <label for="suggestion-text">Yö määrittely</label>
-                   <div>Määrittele yötunnut alku, joilta ei lasketa lääkeottoa.</div>
+               <div class="input-section">
+                   <div class="laake-otsikko text-uppercase fw-bold">Yö määrittely</div>
+                   <div class="input-description">Määrittele yötuntien alku ja loppu, joilta ei lasketa lääkeottoa.</div>
                    <input type="time" id="suggestion-text" @bind-value="yomukaan.YoAlku"/>
+                   <input type="time" id="suggestion-text1" @bind-value="yomukaan.YoLoppu"/>
                </div>
-                <div>
-                   <label for="suggestion-text">Yö määrittely</label>
-                   <div>Määrittele yötunnut loppu, joilta ei lasketa lääkeottoa.</div>
-                  <input type="time" id="suggestion-text1" @bind-value="yomukaan.YoLoppu"/>
-               </div>
-                <div>
-                <button type="submit">Luo yö mukaan</button>
+                
+                <div class="center-children">
+                <button class="btn btn-main btn-lg text-uppercase" type="submit">Luo yö mukaan</button>
             </div>
            </EditForm>
         </div>
-        <div><button @onclick="ClosePage"></button></div>
+           </div>
+</div>
+        
         @if(laakemuodot is not null)
         {
             
-       
+       <div class="row justify-content-center create-form pt-5">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="closebutton"><button class="btn btn-close" @onclick="ClosePage"></button></div>
+        <div>
         <EditForm Model="laake" OnValidSubmit="CreateLaake">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
             <div>
-                <label for="suggestion-text">Lääke</label>
-                <div>Lisää lääke</div>
+                @*<label for="suggestion-text">Lääke</label>*@
+                <div class="laake-otsikko text-uppercase fw-bold">Lisää lääke</div>
                @* input object type text*@
                 <InputText id="suggestion-text" @bind-Value="laake.Nimi"/>
             </div>
@@ -82,12 +85,15 @@
                  </div>
              </InputRadioGroup>
          </div>
-            <div>
-                <button type="submit">Lisää lääke</button>
+            <div class="center-children">
+                <button class="btn btn-main btn-lg text-uppercase" type="submit">Lisää lääke</button>
             </div>
-        </EditForm>}
+        </EditForm>
+        
     </div>
-</div>
+           </div>
+</div>}
+ 
  
 @code {
     private CreateLaakeModel laake = new();
