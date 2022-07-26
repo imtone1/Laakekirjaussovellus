@@ -95,27 +95,29 @@
         @if(ottopvmlista is not null){
             <div class="row justify-content-center detail-form ottoaika-div">
         <div class="col-xl-8 col-lg-10 form-layout"> <div class="fw-bold text-uppercase">Ottoajat</div>
-        <div >
+        <div>
             @foreach (var o in ottopvmlista)
             {
-                //aina sama pvm
-                @if (pvm!=Aika(o))
+                <p hidden >@Aika(o)</p>
+              
+                @if (aika!=pvm)
                 {
-                    
-                
-                <div class="fw-bold">@o.Otettu.ToString("dd.MM.yyyy") klo </div>
-
-                @foreach (var item in ottopvmlista)
-                {   
-                    @if(PVM(item)==aika)
-                    {
-                    <div class="ottoajat-list ottoajat" >@item.Otettu.ToString("HH:mm")</div>
-                    
+                    <div class="fw-bold">@o.Otettu.ToString("dd.MM.yyyy") klo </div>
+                    <ul>
+                    @foreach (var item in ottopvmlista)
+                    {   
+                        @if(item.Otettu.ToString("dd.MM.yyyy")==aika)
+                        {
+                           
+                        <li><p>@item.Otettu.ToString("HH:mm")</p></li>
+                        <li hidden >@PVM(item)</li>
+                        }
+                        
                     }
-                }
+                    </ul>
                 }
             }
-            </div>
+        </div>
         </div>
         </div>
         }
@@ -261,14 +263,14 @@
 
     private string Aika(AnnosteluValiModel model)
     {
-        aika = "";
+      
         aika=model.Otettu.ToString("dd.MM.yyyy");
         return aika;
     }
 
     private string PVM(AnnosteluValiModel model)
     {
-        pvm = "";
+        
         pvm=model.Otettu.ToString("dd.MM.yyyy");
         return pvm;
     }

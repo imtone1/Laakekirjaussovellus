@@ -526,7 +526,7 @@ a:hover, .btn-link:hover{
 
 .ottoajat-list{
     display:flex;
-    justify-content:flex-start;
+    justify-items:flex-start;
     padding-top:1rem;
 }
 
@@ -537,3 +537,26 @@ a:hover, .btn-link:hover{
 .ottoaika-div{
     padding-top: 1rem;
 }
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+   
+}
+
+li {
+    float: left;
+    background-color: #333333;
+    padding: 10px;
+    margin:0 5px 5px 0;
+}
+
+    li p {
+        display: block;
+        color: white;
+        text-align: center;
+        margin:0;
+        text-decoration: none;
+    }
