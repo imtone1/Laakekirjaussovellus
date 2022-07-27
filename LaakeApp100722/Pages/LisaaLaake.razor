@@ -52,11 +52,11 @@
             </div>
             <div class="input-section">
                 <label class="form-label fw-bold text-uppercase" for="annosmaara">Annostusmäärä</label>
-                <InputNumber id="annosmaara" @bind-Value="laake.AnnosteleluMaara"/>
+                <InputNumber min="0" id="annosmaara" @bind-Value="laake.AnnosteleluMaara"/>
             </div>
              <div class="input-section">
                 <label class="form-label fw-bold text-uppercase" for="annosvali">Annostusteluväli</label>
-                <InputNumber id="annosvali" @bind-Value="laake.AnnosteleluValiId"/>
+                <InputNumber min="0" id="annosvali" @bind-Value="laake.AnnosteleluValiId"/>
             </div>
             <div>
                 <label class="form-label fw-bold text-uppercase" for="laakemuoto">Lääkemuoto</label>
@@ -65,7 +65,7 @@
                     <MyInputRadioGroup id="laakemuoto" @bind-Value="laake.LaakeMuotoId">
                         @foreach(var c in laakemuodot)
                         {
-                            <div class="radio-item-group">
+                            <div class="radio-item-group-laake">
                                 <InputRadio Value ="@c.Id" id="@c.Id"/>
                                 <label for="@c.Id">@c.LaakeMuotoNimi</label>
                                 @if (avaakategoria!=c.Id)
@@ -89,7 +89,7 @@
          <div>
              <label class="form-label fw-bold text-uppercase" for="yomukaan">Yö lasketaan mukaan?</label>
              <InputRadioGroup id="yomukaan" @bind-Value="laake.YoMukaan">
-                 <div class="radio-item-group">
+                 <div class="radio-item-group-yo">
                      <InputRadio Value="true" id="yomukaantrue"/>
                      <label for="yomukaantrue">Yö lasketaan mukaan</label>
                      <InputRadio Value="false" id="yomukaanfalse"/>
