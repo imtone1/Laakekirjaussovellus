@@ -233,6 +233,7 @@ a:hover, .btn-link:hover{
     padding: 10px;
     padding-left: 20px;
     background-color:#FFFFFF;
+    cursor:pointer;
 }
 
 .suggestion-entry-text-title{
