@@ -39,35 +39,47 @@
        <div class="row justify-content-center create-form pt-5">
     <div class="col-xl-8 col-lg-10 form-layout">
         <div class="closebutton"><button class="btn btn-close" @onclick="ClosePage"></button></div>
-        <div>
+        
         <EditForm Model="laake" OnValidSubmit="CreateLaake">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
-            <div>
-                @*<label for="suggestion-text">Lääke</label>*@
+            <div class="input-section">
                 <div class="laake-otsikko text-uppercase fw-bold">Lisää lääke</div>
+                <label class="form-label fw-bold text-uppercase" for="suggestion-text">Lääke</label>
+               
                @* input object type text*@
-                <InputText id="suggestion-text" @bind-Value="laake.Nimi"/>
+                <InputText class="form-control" id="suggestion-text" @bind-Value="laake.Nimi"/>
             </div>
-            <div>
-                <label for="annosmaara">Annostusmäärä</label>
+            <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="annosmaara">Annostusmäärä</label>
                 <InputNumber id="annosmaara" @bind-Value="laake.AnnosteleluMaara"/>
             </div>
-             <div>
-                <label for="annosvali">Annostusteluväli</label>
+             <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="annosvali">Annostusteluväli</label>
                 <InputNumber id="annosvali" @bind-Value="laake.AnnosteleluValiId"/>
             </div>
             <div>
-                <label for="laakemuoto">Lääkemuoto</label>
+                <label class="form-label fw-bold text-uppercase" for="laakemuoto">Lääkemuoto</label>
                 <div>Valitse lääkemuoto</div>
                 <div>
                     <MyInputRadioGroup id="laakemuoto" @bind-Value="laake.LaakeMuotoId">
                         @foreach(var c in laakemuodot)
                         {
-                            <div>
+                            <div class="radio-item-group">
                                 <InputRadio Value ="@c.Id" id="@c.Id"/>
                                 <label for="@c.Id">@c.LaakeMuotoNimi</label>
-                                <div>@c.LaakeMuotoKuvaus</div>
+                                @if (avaakategoria!=c.Id)
+                                    {
+                                  
+                                        <span class="oi oi-chevron-bottom oi-class" @onclick="@(()=>avaakategoria=c.Id)" >Avaa</span>
+                                    
+                                    }
+                                    else
+                                    { 
+                                        <div>@c.LaakeMuotoKuvaus
+                                     <span class="oi oi-chevron-top oi-class" @onclick="(()=>avaakategoria=null)"></span> </div>
+                                    }
+                               
                             </div>
                         }
                     </MyInputRadioGroup>
@@ -75,9 +87,9 @@
                 </div>
             </div>
          <div>
-             <label for="yomukaan">Yö lasketaan mukaan?</label>
+             <label class="form-label fw-bold text-uppercase" for="yomukaan">Yö lasketaan mukaan?</label>
              <InputRadioGroup id="yomukaan" @bind-Value="laake.YoMukaan">
-                 <div>
+                 <div class="radio-item-group">
                      <InputRadio Value="true" id="yomukaantrue"/>
                      <label for="yomukaantrue">Yö lasketaan mukaan</label>
                      <InputRadio Value="false" id="yomukaanfalse"/>
@@ -92,7 +104,7 @@
         
     </div>
            </div>
-</div>}
+}
  
  
 @code {
@@ -101,12 +113,14 @@
     private UserModel loggedInUser;
 
     private CreateYoMaarittelyModel yomukaan = new();
+    private string avaakategoria=null;
 
     protected async override Task OnInitializedAsync()
     {
         laakemuodot = await laakemuotoData.GetAllLaakemuodot();
         loggedInUser = await authProvider.GetUserFromAuth(userData);
     }
+
     private void ClosePage()
     {
         navManager.NavigateTo("/");

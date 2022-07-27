@@ -468,7 +468,7 @@ a:hover, .btn-link:hover{
     margin-top:20px;
 }
 
-.suggestion-detail-status-complete{
+.suggestion-detail-status-completed{
     background-color:#B5D43A;
     border-top-left-radius:15px;
     border-bottom-left-radius: 15px;
@@ -644,4 +644,83 @@ li {
     color:#A9A9A9;
     height:2px;
     opacity:1;
+}
+
+.suggestion-entry-bottom{
+    display:flex;
+}
+
+.btn-archive{
+    border:0;
+    background-color:#FFFFFF;
+    padding:0 10px;
+    flex:unset;
+}
+
+.btn-archive-confirm,
+.btn-archive-reject{
+    text-transform:uppercase;
+    color:darkgray;
+    font-family:'Montserrat', sans-serif;
+    font-weight:700;
+    font-size:0.8rem;
+    flex:1;
+}
+
+.btn-archive-confirm{
+    color:#E9354C;
+}
+
+.admin-details{
+    margin-top:20px;
+}
+
+.admin-set-statuses{
+    display:flex;
+    justify-content:space-evenly;
+    flex-wrap:wrap;
+}
+
+.btn-status-completed:hover{
+    color:#B5D43A;
+}
+
+.btn-status-watching:hover {
+    color: #E9353C;
+}
+.btn-status-upcoming:hover {
+    color: #835581;
+}
+.btn-status-dismissed:hover {
+    color: #F9C30B;
+}
+
+.radio-item-group-laake input[type="radio"] {
+    display: none;
+}
+
+.radio-item-group-laake{
+    border-color: #39BAD8;
+    border-width: 1px;
+    padding: 0.3rem 1.5rem;
+    border-radius: 10px;
+   
+    border-style: solid;
+    cursor: pointer;
+}
+
+.radio-item-group-laake input[type="radio"]:checked + label {
+    background-color: #39BAD8;
+    color: #FFFFFF;
+    
+    border: 1px #39BAD8 solid;
+}
+
+
+.radio-item-group-laake {
+    margin: 0.5rem;
+}
+
+.oi-class{
+    margin-left:4px;
 }
