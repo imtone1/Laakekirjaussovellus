@@ -31,7 +31,7 @@ public class MongoLaakeData : ILaakeData
          var results = await _laake.FindAsync(s => s.Author.Id == userId);
          output = results.ToList();
 
-         _cache.Set(userId, output, TimeSpan.FromMinutes(1));
+         _cache.Set(userId, output, TimeSpan.FromSeconds(1));
       }
 
       return output;

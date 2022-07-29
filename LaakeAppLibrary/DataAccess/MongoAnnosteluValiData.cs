@@ -20,16 +20,26 @@ public class MongoAnnosteluValiData : IAnnosteluValiData
 
    public async Task<List<AnnosteluValiModel>> GetUsersAnnosteluVali(string userId)
    {
-      var output = _cache.Get<List<AnnosteluValiModel>>(userId);
-      if (output is null)
-      {
-         var results = await _annosteluvali.FindAsync(s => s.Author.Id == userId);
-         output = results.ToList();
+      //cachen kanssa
+      //var output = _cache.Get<List<AnnosteluValiModel>>(userId);
+      //if (output is null)
+      //{
+      //   var results = await _annosteluvali.FindAsync(s => s.Author.Id == userId);
+      //   output = results.ToList();
 
-         _cache.Set(userId, output, TimeSpan.FromMinutes(1));
-      }
+      //   _cache.Set(userId, output, TimeSpan.FromSeconds(1));
+      //}
+
+      //return output;
+
+      //ilman cachea
+      
+      var results = await _annosteluvali.FindAsync(s => s.Author.Id == userId);
+      var output = results.ToList();
+
 
       return output;
+
    }
 
    public async Task<List<AnnosteluValiModel>> GetLaakkeenOttopvm(string userId, string laakeId)

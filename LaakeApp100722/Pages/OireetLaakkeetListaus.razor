@@ -1,0 +1,106 @@
+﻿@page "/OireetListaus"
+@attribute [Authorize]
+@using LaakeApp100722.Models
+@using LaakeApp100722.Components
+@inject AuthenticationStateProvider authProvider
+@inject ILaakeData laakeData
+@inject IUserData userData
+@inject ILaakeMuotoData laakemuotoData
+@inject IYoMukaanData yomaarittelyData
+@inject IAnnosteluValiData annosteluData
+@inject IOireetData oireData
+@inject NavigationManager navManager
+
+
+     <div class="row justify-content-center detail-form ottoaika-div">
+                <div class="col-xl-8 col-lg-10 form-layout"> <div class="fw-bold text-uppercase">Ottoajat</div>
+    
+
+        @if (ottopvmlista is not null)
+        {
+                        @foreach (var o in ottopvmlista)
+                        { 
+                            
+                            <p hidden >@Aika(o)</p>
+
+                            @if (aika != pvm)
+                            {
+                                
+                                <div class="fw-bold">@o.Otettu.ToString("dd.MM.yyyy") klo </div>
+                                @*<ul>
+                                    @foreach (var item in ottopvmlista)
+                                    {
+                                        @if (item.Otettu.ToString("dd.MM.yyyy") == aika)
+                                        {
+                                            <li><p>@item.Otettu.ToString("HH:mm")</p></li>
+                                            <li><p>@item.Laake.Nimi</p></li>
+                                            
+                                            <li hidden >@PVM(item)</li>
+                                        }
+                                    }
+                                </ul>*@
+
+                                 <ul class="list-group">
+                                      @foreach (var item in ottopvmlista)
+                                    {
+                                        @if (item.Otettu.ToString("dd.MM.yyyy") == aika)
+                                        {
+                                  <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                      <div class="fw-bold">@item.Laake.Nimi</div>
+                                      @*Cras justo odio*@
+                                    </div>
+                                    <span class="badge bg-dark">@item.Otettu.ToString("HH:mm")</span>
+                                  </li>
+                                   <li hidden >@PVM(item)</li>
+                                        }
+                                    }
+                                </ul>
+                            }
+                   
+        }
+            
+            
+    }
+                </div>
+                
+        </div>
+    
+
+
+
+@code {
+    private List<LaakeModel> laake;
+    private UserModel loggedInUser;
+    private AnnosteluValiModel annosteluVali;
+    private List<AnnosteluValiModel> ottopvmlista;
+
+    private string aika = "";
+    private string pvm = "";
+
+    protected async override Task OnInitializedAsync()
+    { 
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
+        laake = await laakeData.GetUsersLaakkeet(loggedInUser.Id);
+        ottopvmlista = await annosteluData.GetUsersAnnosteluVali(loggedInUser.Id);
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+
+      private string Aika(AnnosteluValiModel model)
+    {
+      
+        aika=model.Otettu.ToString("dd.MM.yyyy");
+        return aika;
+    }
+
+    private string PVM(AnnosteluValiModel model)
+    {
+        
+        pvm=model.Otettu.ToString("dd.MM.yyyy");
+        return pvm;
+    }
+}
