@@ -44,7 +44,7 @@
                             @s.Nimi
                         </div>
                         <div>Annostelumäärä: @s.AnnosteluMaara</div>
-                        <div>Seuraavat lääkkeenottoajat: @LaskeLaakeVali1(s.AnnosteluVali1)</div>
+                        <div>Seuraavat lääkkeenottoajat: @s.SeuraavatOttoAjat</div>
                         <div>
                             <div class="suggestion-entry-text-category" @onclick="(()=> OpenDetails(s))">
                                 @s.LaakeMuoto?.LaakeMuotoNimi
@@ -97,8 +97,8 @@
     private double jaettuna;
     private DateTime seuraavaAika;
     private string seuraavaaika;
-    private string value1 = "";
-    
+   
+
     private string otettunalaake;
 
     protected async override Task OnInitializedAsync()
@@ -231,68 +231,7 @@
         }
     }
 
-    private string LaskeLaakeVali1(int vali)
-    {try
-        {value1 = "";
-            if (yo is not null)
-            {
-                TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
-                double paiva = 24 - (double)result.Hours;
-                //double paiva = 24;
-
-                int annosteluvaliint = vali;
-                if (annosteluvaliint > 2)
-                {
-                    annosteluvaliint = annosteluvaliint - 1;
-                }
-
-                double jaettuna = paiva / (annosteluvaliint);
-
-                //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
-                //DateTime seuraavaAika = yo.YoLoppu;
-                DateTime seuraavaAika = DateTime.UtcNow;
-                for (var i = 0; i < vali; i++)
-                {
-                    if (yo.YoLoppu.TimeOfDay <= seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
-                    { if (i == 0)
-                        {
-                            value1 = value1 + seuraavaAika.ToString("HH:mm");
-                        }
-                        else
-                        {
-                            value1 = value1 + ", " + seuraavaAika.ToString("HH:mm");
-                        }
-                        seuraavaAika = seuraavaAika.AddHours(jaettuna);
-
-                    }
-                }
-                return value1;
-            }
-            else
-            {
-                paiva = 24;
-                double jaettuna = paiva / vali;
-                DateTime seuraavaAika = DateTime.UtcNow;
-
-                for (var i = 0; i < vali; i++)
-                {
-                    if (i == 0)
-                    {
-                        value1= value1+ seuraavaAika.ToString("HH:mm");
-                    }else{
-                        value1= value1+ ", "+ seuraavaAika.ToString("HH:mm");}
-                    seuraavaAika = seuraavaAika.AddHours(jaettuna);
-
-                }
-                return value1;
-            }
-        }
-        catch
-        {
-            return "nolla";
-        }
-
-    }
+    
 
     private async Task OtaLaake(LaakeModel laakeotettu)
     {

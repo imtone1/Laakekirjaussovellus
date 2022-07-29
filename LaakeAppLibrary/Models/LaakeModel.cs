@@ -15,6 +15,8 @@ namespace LaakeAppLibrary.Models
       public int AnnosteluVali1 { get; set; }
       public AnnosteluValiModel AnnosteluVali { get; set; }
       public bool YoMukaan { get; set; } = false;
+
+      public string SeuraavatOttoAjat { get; set; }
       public YoMaarittelyModel YoMaarittely { get; set; }
       public bool Kaytetaan { get; set; } = true;
       public bool Arkistoitu { get; set; } = false;

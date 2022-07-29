@@ -17,12 +17,6 @@
         <div class="closebutton">
                 <button class="btn btn-close" @onclick="ClosePage"></button>
         </div>
-    @* <div>
-        <div>
-            <button @onclick="this.OnClick">Laske seuraavat lääkkeenottoajat</button>
-            @value1
-        </div>
-    </div>*@
    
     @if (laake is not null)
         { 
@@ -80,14 +74,21 @@
                 </div>
                 <div>@laake.LaakeMuoto.LaakeMuotoKuvaus</div>}
             </div>
-            </div>
+           
                 <div class="col-12 laake-detail" >
                     <div>@Yomukaan(laake.YoMukaan)</div>
                 <div>Lääke lisätty: @laake.Lisatty.ToString("dd.MM.yyyy")</div>
             </div>
-            
-         </div>
+             <div class="mt-2 col-12 laake-detail">
+                 <div>Seuraavat lääkkeenottoajat:</div><div> @laake.SeuraavatOttoAjat </div>
+         
   
+       </div>
+            <button class="btn btn-main btn-sm text-uppercase"  @onclick="(()=>LaskeLaakeVali(laake.AnnosteluVali1))">Laske uudelleen lääkkeenottoajat</button>
+            @value1
+       
+        </div>
+    </div>
     
     }
     </div>
@@ -154,6 +155,7 @@
     private string value1 = "";
     private string aika = "";
     private string pvm = "";
+     
 
 
     protected async override Task OnInitializedAsync()
@@ -209,44 +211,76 @@
 
 
     }
-    private void OnClick(MouseEventArgs e)
+    private async Task LaskeLaakeVali(int vali)
     {
-        if(yo is not null){
-            TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
-            double paiva = 24 - (double)result.Hours;
-            //double paiva = 24;
-            //int paiva = 24-4;
-            int annosteluvaliint = laake.AnnosteluVali1;
-            if (annosteluvaliint > 2){
-                annosteluvaliint =annosteluvaliint- 1;
-            }
-
-            double jaettuna = paiva/ (annosteluvaliint);
-            //double jaettuna = paiva/ (laake.AnnosteluVali1-1);
-            //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
-            DateTime seuraavaAika = yo.YoLoppu;
-
-            for (var i = 0; i < laake.AnnosteluVali1; i++)
+         try
+        {
+            value1 = "";
+            if (yo is not null)
             {
-                if (yo.YoLoppu.TimeOfDay <=seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
+                TimeSpan result = yo.YoLoppu.Subtract(yo.YoAlku);
+                double paiva = 24 - (double)result.Hours;
+                //double paiva = 24;
+
+                int annosteluvaliint = vali;
+                if (annosteluvaliint > 2)
                 {
-                    value1= value1+ " "+ seuraavaAika.ToString("HH:mm");
-                    seuraavaAika = seuraavaAika.AddHours(jaettuna);
+                    annosteluvaliint = annosteluvaliint - 1;
+                }
+
+                double jaettuna = paiva / (annosteluvaliint);
+
+                //seuraavaAika = yo.YoLoppu.AddHours(jaettuna);
+                //DateTime seuraavaAika = yo.YoLoppu;
+                DateTime seuraavaAika = DateTime.UtcNow;
+                for (var i = 0; i < vali; i++)
+                {
+                    if (yo.YoLoppu.TimeOfDay <= seuraavaAika.TimeOfDay && yo.YoAlku.TimeOfDay >= seuraavaAika.TimeOfDay)
+                    { if (i == 0)
+                        {
+                            value1 = value1 + seuraavaAika.ToString("HH:mm");
+                        }
+                        else
+                        {
+                            value1 = value1 + ", " + seuraavaAika.ToString("HH:mm");
+                        }
+                        seuraavaAika = seuraavaAika.AddHours(jaettuna);
+
+                    }
                 }
 
             }
-        }
-        else
-        {
-            paiva = 24;
-            double jaettuna = paiva / laake.AnnosteluVali1;
-            DateTime seuraavaAika = DateTime.Now;
-            for (var i = 0; i < laake.AnnosteluVali1; i++)
+            else
             {
-                value1= value1+ " "+ seuraavaAika.ToString("HH:mm");
-                seuraavaAika = seuraavaAika.AddHours(jaettuna);
+                paiva = 24;
+                double jaettuna = paiva / vali;
+                DateTime seuraavaAika = DateTime.UtcNow;
+
+                for (var i = 0; i < vali; i++)
+                {
+                    if (i == 0)
+                    {
+                        value1= value1+ seuraavaAika.ToString("HH:mm");
+                    }else{
+                        value1= value1+ ", "+ seuraavaAika.ToString("HH:mm");}
+                    seuraavaAika = seuraavaAika.AddHours(jaettuna);
+
+                }
+
             }
+
+            laake.SeuraavatOttoAjat = value1;
+            await laakeData.UpdateLaake(laake);
+            
         }
+        
+            
+        
+        catch
+        {
+            value1="nolla";
+        }
+
 
     }
     private string Yomukaan(bool yomukaan)
