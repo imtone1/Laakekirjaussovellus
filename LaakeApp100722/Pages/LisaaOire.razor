@@ -1,0 +1,110 @@
+﻿@page "/LisaaOire"
+@attribute [Authorize]
+@using LaakeApp100722.Models
+@using LaakeApp100722.Components
+@using System.Globalization
+@inject AuthenticationStateProvider authProvider
+@inject ILaakeData laakeData
+@inject IUserData userData
+@inject IOireetData oireData
+@inject NavigationManager navManager
+
+<h1 class="page-heading text-uppercase mb-4">Lisää oireesi</h1>
+
+<div class="row justify-content-center create-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="close-button-section">
+            <button class="btn btn-close" @onclick="ClosePage"></button></div>
+       
+            <EditForm Model="oire" OnValidSubmit="CreateOire">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="suggestion-text">Oire</label>
+                    <div class="input-description">esim. ripuli, oksentaminen, pahoinvointi</div>
+                    @* input object type text*@
+                    <InputText class="form-control" id="suggestion-text" @bind-Value="oire.OireNimi"/>
+                </div>
+             
+             <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="description-text">Oireen kuvaus</label>
+                <div class="input-description">Voit kuvata tarkemmin oirettasi tässä.</div>
+               @* input object type text*@
+                <InputTextArea class="form-control" id="desctiption-text" @bind-Value="oire.OireKuvaus"/>
+            </div>
+             <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="oireenpvm">Oireen pvm ja aika</label>
+                <div class="input-description">Jos jätät pvm tai ajan lisäämättä, ohjelma laittaa oireen päivämääräksi nykyhetken.</div>
+               @* input object type text*@
+               <input type="time" id="oireenpvm" @bind-value="oireaika"/>
+               <InputDate @bind-Value="oirepvm"></InputDate>
+            </div>
+
+            <div class="center-children">
+                <button class="btn btn-main btn-lg text-uppercase" type="submit">Lisää oire</button>
+            </div>
+        </EditForm>    
+    </div>
+</div>
+
+@code {
+    private CreateOireModel oire = new();
+    private UserModel loggedInUser;
+    private DateTime oireaika =DateTime.MinValue;
+    private DateTime oirepvm=DateTime.MinValue;
+
+    private DateTime oirePVM;
+    private int vuosi;
+    private int kuukausi;
+    private int paiva;
+    private int tunnit;
+    private int minuutit;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+
+    private async Task CreateOire()
+    {
+        OireetModel o = new();
+        o.OireNimi = oire.OireNimi;
+        o.OireKuvaus = oire.OireKuvaus;
+        o.Author = new BasicUserModel(loggedInUser);
+        if (oireaika!=DateTime.MinValue && oirepvm!=DateTime.MinValue)
+        {
+            vuosi = Int32.Parse(oirepvm.ToString("yyyy"));
+            kuukausi = Int32.Parse(oirepvm.ToString("MM"));
+            paiva = Int32.Parse(oirepvm.ToString("dd"));
+            tunnit = Int32.Parse(oireaika.ToString("HH"));
+            minuutit = Int32.Parse(oireaika.ToString("mm"));
+           
+            oirePVM = new DateTime(vuosi, kuukausi, paiva, tunnit, minuutit, 0);
+            o.OirePvm = oirePVM;
+        }else if (oireaika !=DateTime.MinValue && oirepvm==DateTime.MinValue)
+        {
+            tunnit = Int32.Parse(oireaika.ToString("HH"));
+            minuutit = Int32.Parse(oireaika.ToString("mm"));
+            vuosi = Int32.Parse(DateTime.UtcNow.ToString("yyyy"));
+            kuukausi = Int32.Parse(DateTime.UtcNow.ToString("MM"));
+            paiva = Int32.Parse(DateTime.UtcNow.ToString("dd"));
+            oirePVM = new DateTime(vuosi, kuukausi, paiva, tunnit, minuutit, 0);
+            o.OirePvm = oirePVM;
+        }
+        else
+        {
+            o.OirePvm = DateTime.UtcNow;
+        }
+        
+
+        await oireData.CreateOire(o);
+        oire = new();
+        ClosePage();
+    }
+}
