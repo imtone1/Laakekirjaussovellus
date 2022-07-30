@@ -12,21 +12,24 @@
 @inject NavigationManager navManager
 
 
+
      <div class="row justify-content-center detail-form ottoaika-div">
                 <div class="col-xl-8 col-lg-10 form-layout"> <div class="fw-bold text-uppercase">Ottoajat</div>
     
 
-        @if (ottopvmlista is not null)
+        @if (ottopvmlista is not null && oirelista is not null)
         {
-                        @foreach (var o in ottopvmlista)
+                        @foreach (var o in ottopvmlistauslista.OrderBy(c => c.Pvm).ToList())
                         { 
-                            
-                            <p hidden >@Aika(o)</p>
+                         
+                            <p hidden >@Aika(o.Pvm)</p>
+
 
                             @if (aika != pvm)
                             {
                                 
-                                <div class="fw-bold">@o.Otettu.ToString("dd.MM.yyyy") klo </div>
+                                <div class="fw-bold">@o.Pvm.ToString("dd.MM.yyyy") klo </div>
+                              
                                 @*<ul>
                                     @foreach (var item in ottopvmlista)
                                     {
@@ -39,30 +42,32 @@
                                         }
                                     }
                                 </ul>*@
-
-                                 <ul class="list-group">
-                                      @foreach (var item in ottopvmlista)
+                                   <ul class="list-group">
+                                
+                                      @foreach (var item in ottopvmlistauslista.OrderBy(c => c.Pvm).ToList())
                                     {
-                                        @if (item.Otettu.ToString("dd.MM.yyyy") == aika)
+                                        @if (item.Pvm.ToString("dd.MM.yyyy") == aika)
                                         {
-                                  <li class="list-group-item d-flex justify-content-between align-items-start">
+                                  <li class="list-group-item d-flex justify-content-between align-items-start @item.Style">
                                     <div class="ms-2 me-auto">
-                                      <div class="fw-bold">@item.Laake.Nimi</div>
+                                      <div class="fw-bold">@item.Nimi</div>
+                                      
                                       @*Cras justo odio*@
                                     </div>
-                                    <span class="badge bg-dark">@item.Otettu.ToString("HH:mm")</span>
+                                    <span class="badge bg-dark">@item.Pvm.ToString("HH:mm")</span>
+                                     
                                   </li>
-                                   <li hidden >@PVM(item)</li>
+                                   <li hidden >@PVM(item.Pvm)</li>
                                         }
                                     }
-                                </ul>
+                                    </ul>
                             }
+                  
+                        }
                    
         }
-            
-            
-    }
-                </div>
+    
+    </div>
                 
         </div>
     
@@ -74,15 +79,23 @@
     private UserModel loggedInUser;
     private AnnosteluValiModel annosteluVali;
     private List<AnnosteluValiModel> ottopvmlista;
+    private List<OireetModel> oirelista;
+  
+    private List<ottopvmlistaus> ottopvmlistauslista = new List<ottopvmlistaus>();
+    private List<oirepvmlistaus> oirepvmlistauslista = new List<oirepvmlistaus>();
 
     private string aika = "";
     private string pvm = "";
+
 
     protected async override Task OnInitializedAsync()
     { 
         loggedInUser = await authProvider.GetUserFromAuth(userData);
         laake = await laakeData.GetUsersLaakkeet(loggedInUser.Id);
         ottopvmlista = await annosteluData.GetUsersAnnosteluVali(loggedInUser.Id);
+        oirelista = await oireData.GetUsersOireet(loggedInUser.Id);
+        Listaus();
+
     }
 
     private void ClosePage()
@@ -90,17 +103,59 @@
         navManager.NavigateTo("/");
     }
 
-      private string Aika(AnnosteluValiModel model)
+    private string Aika(DateTime time)
     {
-      
-        aika=model.Otettu.ToString("dd.MM.yyyy");
+
+        aika=time.ToString("dd.MM.yyyy");
         return aika;
     }
 
-    private string PVM(AnnosteluValiModel model)
+    private string PVM(DateTime date)
     {
-        
-        pvm=model.Otettu.ToString("dd.MM.yyyy");
+
+        pvm=date.ToString("dd.MM.yyyy");
         return pvm;
+    }
+
+    private void Listaus()
+    {
+        // var output = oire
+        //.Select(x => new
+        //{
+        //    id = x.Id,
+        //    date = x.OirePvm,
+        //    type = x.OireNimi
+        //})
+        //.Concat(laakeotto.
+        //    Select(x => new
+        //    {
+        //        id = x.Id,
+        //        date = x.Otettu,
+        //        type = x.Laake.Nimi
+        //    }))
+        // .OrderByDescending(x => x.date).ToList();
+
+        //yhdistettylistaus = output;
+        //await oirelista;
+
+
+        foreach (var item in ottopvmlista)
+        {
+
+            ottopvmlistauslista.Add(new ottopvmlistaus { Nimi = item.Laake.Nimi, Pvm = item.Otettu, Style="laake"});
+
+
+        }
+
+        foreach (var item in oirelista)
+        {
+
+            ottopvmlistauslista.Add(new ottopvmlistaus { Nimi = item.OireNimi, Pvm = item.OirePvm, Style="oire" });
+
+
+        }
+
+       
+
     }
 }

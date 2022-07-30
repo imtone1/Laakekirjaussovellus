@@ -24,14 +24,24 @@ public class MongoOireetData : IOireetData
    }
    public async Task<List<OireetModel>> GetUsersOireet(string userId)
    {
-      var output = _cache.Get<List<OireetModel>>(userId);
-      if (output is null)
-      {
-         var results = await _oireet.FindAsync(s => s.Author.Id == userId);
-         output = results.ToList();
+      //var output = _cache.Get<List<OireetModel>>(userId);
+      //if (output is null)
+      //{
+      //   var results = await _oireet.FindAsync(s => s.Author.Id == userId);
+      //   output = results.ToList();
 
-         _cache.Set(userId, output, TimeSpan.FromMinutes(1));
-      }
+      //   _cache.Set(userId, output, TimeSpan.FromMinutes(1));
+      //}
+
+      //return output;
+
+      //ilman cachea
+     
+         var results = await _oireet.FindAsync(s => s.Author.Id == userId);
+         var output = results.ToList().OrderBy(s => s.OirePvm).ToList();
+   
+
+   
 
       return output;
    }
